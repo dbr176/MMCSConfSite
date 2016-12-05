@@ -1,4 +1,4 @@
-name:              mmcsConfSite
+name:              MMCSConfSite
 version:           0.0.0
 cabal-version:     >= 1.8
 build-type:        Simple
@@ -66,7 +66,7 @@ library
                  , bytestring                    >= 0.9        && < 0.11
                  , text                          >= 0.11       && < 2.0
                  , persistent                    >= 2.0        && < 2.7
-                 , persistent-postgresql         >= 2.1.1      && < 2.7
+                 , persistent-sqlite             >= 2.1.1      && < 2.7
                  , persistent-template           >= 2.0        && < 2.7
                  , template-haskell
                  , shakespeare                   >= 2.0        && < 2.1
@@ -92,13 +92,13 @@ library
                  , case-insensitive
                  , wai
 
-executable         mmcsConfSite
+executable         MMCSConfSite
     if flag(library-only)
         Buildable: False
 
     main-is:           main.hs
     hs-source-dirs:    app
-    build-depends:     base, mmcsConfSite
+    build-depends:     base, MMCSConfSite
 
     ghc-options:       -threaded -rtsopts -with-rtsopts=-N
 
@@ -150,13 +150,13 @@ test-suite test
                 CPP
 
     build-depends: base
-                 , mmcsConfSite
+                 , MMCSConfSite
                  , yesod-auth
                  , yesod-test >= 1.5.2 && < 1.6
                  , yesod-core
                  , yesod
                  , persistent
-                 , persistent-postgresql
+                 , persistent-sqlite
                  , resourcet
                  , monad-logger
                  , shakespeare

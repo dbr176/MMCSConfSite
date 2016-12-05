@@ -24,13 +24,9 @@ ip-from-header: "_env:IP_FROM_HEADER:false"
 # See https://github.com/yesodweb/yesod/wiki/Configuration#parsing-numeric-values-as-strings
 
 database:
-  user:     "_env:PGUSER:mmcsConfSite_LOWER"
-  password: "_env:PGPASS:mmcsConfSite"
-  host:     "_env:PGHOST:localhost"
-  port:     "_env:PGPORT:5432"
   # See config/test-settings.yml for an override during tests
-  database: "_env:PGDATABASE:mmcsConfSite_LOWER"
-  poolsize: "_env:PGPOOLSIZE:10"
+  database: "_env:SQLITE_DATABASE:MMCSConfSite.sqlite3"
+  poolsize: "_env:SQLITE_POOLSIZE:10"
 
 copyright: Insert copyright statement here
 #analytics: UA-YOURCODE

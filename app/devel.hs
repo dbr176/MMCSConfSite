@@ -1,5 +1,5 @@
 {-# LANGUAGE PackageImports #-}
-import "mmcsConfSite" Application (develMain)
+import "MMCSConfSite" Application (develMain)
 import Prelude (IO)
 
 main :: IO ()

@@ -1,2 +1,0 @@
-# mmcsConfSite
-MMCS conference site
