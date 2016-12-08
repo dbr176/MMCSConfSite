@@ -13,5 +13,14 @@ Comment json -- Adding "json" causes ToJSON and FromJSON instances to be derived
     userId UserId Maybe
     deriving Eq
     deriving Show
+Reporter 
+    name Text
+    userId UserId Maybe
+Report
+    title Text
+    reporterId UserId Maybe
+    time TimeOfDay
+    day Day
+    room Text
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)
