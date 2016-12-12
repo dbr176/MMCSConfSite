@@ -38,6 +38,8 @@ import Handler.Home
 import Handler.Comment
 import Handler.Profile
 
+import qualified Data.Map as Map
+
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the
 -- comments there for more details.
@@ -182,6 +184,16 @@ handler h = getAppSettings >>= makeFoundation >>= flip unsafeHandler h
 db :: ReaderT SqlBackend (HandlerT App IO) a -> IO a
 db = handler . runDB
 
+---------------------------------------------
+-- Функции для работы с БД
+---------------------------------------------
+
+roomNotExistMsg = "Room does not exist"
+userNotExist    = "User does not exist"
+reportNotExist  = "Report does not exist"
+noFreeSeats     = "There are no free seats"
+userRegistered  = "You have already registered" 
+
 {-
 Room
     roomident Text
@@ -210,7 +222,7 @@ addRoom ident seats = do insert $ Room ident seats
 addReport title reporter time day roomid = do
     room <- selectFirst [ RoomRoomident ==. roomid ] []
     return $ maybeToEither room
-        "Room does not exist" $
+        roomNotExistMsg $
         \(Entity xid x) -> do
             Right $ insert 
                   $ Report title reporter time day xid (roomMaxseats x)
@@ -221,7 +233,7 @@ removeSeat (Entity rpid r) = do
         then do
             return $
                 Right $ update rpid [ReportSeats =. reportSeats r - 1]
-        else do return $ Left "There are no free seats"
+        else do return $ Left noFreeSeats
 
 -- Занимает место для пользователя
 visitReport uid rid = do
@@ -230,11 +242,11 @@ visitReport uid rid = do
 
     case user of
         Nothing ->
-            return $ Left "User does not exist"
+            return $ Left userNotExist
         Just (Entity usid _) -> 
             case report of 
                 Nothing -> 
-                    return $ Left "Report does not exist"
+                    return $ Left reportNotExist
                 Just (Entity rpid r) -> do
                     subscr  <- selectFirst  [ SubscriptionsUserid ==. usid, 
                                             SubscriptionsReportid ==. rpid] []
@@ -242,4 +254,4 @@ visitReport uid rid = do
                         Nothing -> 
                             removeSeat (Entity rpid r)
                         Just _  -> 
-                            Left "You have already registered" 
+                            Left userRegistered
