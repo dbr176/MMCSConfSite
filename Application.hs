@@ -205,6 +205,7 @@ maybeToEither v msg f =
         Nothing -> Left msg
         Just x -> f x
 
+-- Добавляет новую аудиторию
 addRoom ident seats = do insert $ Room ident seats
 addReport title reporter time day roomid = do
     room <- selectFirst [ RoomRoomident ==. roomid ] []
@@ -214,8 +215,7 @@ addReport title reporter time day roomid = do
             Right $ insert 
                   $ Report title reporter time day xid (roomMaxseats x)
 
-
-
+-- Занимает место на докладе
 removeSeat (Entity rpid r) = do
     if (reportSeats r) > 0 
         then do
@@ -223,7 +223,7 @@ removeSeat (Entity rpid r) = do
                 Right $ update rpid [ReportSeats =. reportSeats r - 1]
         else do return $ Left "There are no free seats"
 
-
+-- Занимает место для пользователя
 visitReport uid rid = do
     user    <- selectFirst [ UserIdent ==. uid ] []
     report  <- selectFirst [ ReportTitle ==. rid ] []
