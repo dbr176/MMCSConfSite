@@ -16,6 +16,7 @@ module Application
 import Control.Monad.Logger                 (liftLoc, runLoggingT)
 import Database.Persist.Sqlite              (createSqlitePool, runSqlPool,
                                              sqlDatabase, sqlPoolSize)
+
 import Import
 import Language.Haskell.TH.Syntax           (qLocation)
 import Network.Wai (Middleware)
@@ -180,3 +181,65 @@ handler h = getAppSettings >>= makeFoundation >>= flip unsafeHandler h
 -- | Run DB queries
 db :: ReaderT SqlBackend (HandlerT App IO) a -> IO a
 db = handler . runDB
+
+{-
+Room
+    roomident Text
+    maxseats Int
+    UniqueRoom roomident
+Report
+    title Text
+    reporter Text
+    time TimeOfDay
+    day Day
+    room RoomId
+    seats Int
+    UniqueReport title
+Subscriptions
+    userid UserId
+    reportid ReportId
+-}
+
+maybeToEither v msg f =
+    case v of
+        Nothing -> Left msg
+        Just x -> f x
+
+addRoom ident seats = do insert $ Room ident seats
+addReport title reporter time day roomid = do
+    room <- selectFirst [ RoomRoomident ==. roomid ] []
+    return $ maybeToEither room
+        "Room does not exist" $
+        \(Entity xid x) -> do
+            Right $ insert 
+                  $ Report title reporter time day xid (roomMaxseats x)
+
+
+
+removeSeat (Entity rpid r) = do
+    if (reportSeats r) > 0 
+        then do
+            return $
+                Right $ update rpid [ReportSeats =. reportSeats r - 1]
+        else do return $ Left "There are no free seats"
+
+
+visitReport uid rid = do
+    user    <- selectFirst [ UserIdent ==. uid ] []
+    report  <- selectFirst [ ReportTitle ==. rid ] []
+
+    case user of
+        Nothing ->
+            return $ Left "User does not exist"
+        Just (Entity usid _) -> 
+            case report of 
+                Nothing -> 
+                    return $ Left "Report does not exist"
+                Just (Entity rpid r) -> do
+                    subscr  <- selectFirst  [ SubscriptionsUserid ==. usid, 
+                                            SubscriptionsReportid ==. rpid] []
+                    return $ case subscr of
+                        Nothing -> 
+                            removeSeat (Entity rpid r)
+                        Just _  -> 
+                            Left "You have already registered" 
