@@ -18,13 +18,6 @@ import Network.Wai.Middleware.RequestLogger (Destination (Logger),
 import System.Log.FastLogger                (defaultBufSize, newStdoutLoggerSet,
                                              toLogStr)
 
--- Import all relevant handler modules here.
--- Don't forget to add new modules to your cabal file!
-import Handler.Common
-import Handler.Home
-import Handler.Admin
-import Handler.Comment
-import Handler.Profile
 
 ---------------------------------------------
 -- Функции для работы с БД
@@ -68,6 +61,9 @@ addReport title reporter time day roomid = do
         \(Entity xid x) -> do
             Right $ insert 
                   $ Report title reporter time day xid (roomMaxseats x)
+
+removeRoom ident = do
+    deleteWhere [RoomRoomident ==. ident]
 
 -- Занимает место на докладе
 removeSeat (Entity rpid r) = do
