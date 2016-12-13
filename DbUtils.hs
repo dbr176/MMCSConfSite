@@ -78,6 +78,7 @@ removeSeat (Entity rpid r) = do
         else do return $ Left noFreeSeats
 
 -- Занимает место для пользователя
+-- TODO: убрать case'ы
 visitReport uid rid = do
     user    <- selectFirst [ UserIdent ==. uid ] []
     report  <- selectFirst [ ReportTitle ==. rid ] []
