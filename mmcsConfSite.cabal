@@ -25,6 +25,7 @@ library
                      Handler.Admin
                      Handler.Comment
                      Handler.Profile
+                     DbUtils
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT
