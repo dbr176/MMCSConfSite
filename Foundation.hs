@@ -97,6 +97,16 @@ instance Yesod App where
                     , menuItemAccessCallback = True
                     }
                 , NavbarLeft $ MenuItem
+                    { menuItemLabel = "Admin"
+                    , menuItemRoute = AdminR
+                    , menuItemAccessCallback = True
+                    }    
+                , NavbarLeft $ MenuItem
+                    { menuItemLabel = "Program"
+                    , menuItemRoute = ProgramR
+                    , menuItemAccessCallback = True
+                    }
+                , NavbarLeft $ MenuItem
                     { menuItemLabel = "Profile"
                     , menuItemRoute = ProfileR
                     , menuItemAccessCallback = isJust muser
@@ -179,7 +189,9 @@ instance YesodBreadcrumbs App where
   breadcrumb HomeR = return ("Home", Nothing)
   breadcrumb (AuthR _) = return ("Login", Just HomeR)
   breadcrumb ProfileR = return ("Profile", Just HomeR)
-  breadcrumb  _ = return ("home", Nothing)
+  breadcrumb  ProgramR = return ("program", Just HomeR)
+  breadcrumb  AdminR = return ("admin profile", Just HomeR)
+  breadcrumb  _ = return ("home2", Nothing)
 
 -- How to run database actions.
 instance YesodPersist App where
