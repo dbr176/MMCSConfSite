@@ -117,7 +117,7 @@ instance Yesod App where
                     , menuItemAccessCallback = isJust muser
                     }
                 , NavbarRight $ MenuItem
-                    { menuItemLabel = "Login"
+                    { menuItemLabel = "Вход"
                     , menuItemRoute = AuthR LoginR
                     , menuItemAccessCallback = isNothing muser
                     }
@@ -192,11 +192,12 @@ instance Yesod App where
 
 -- Define breadcrumbs.
 instance YesodBreadcrumbs App where
-  breadcrumb HomeR = return ("Home", Nothing)
-  breadcrumb (AuthR _) = return ("Login", Just HomeR)
-  breadcrumb ProfileR = return ("Profile", Just HomeR)
-  breadcrumb  ProgramR = return ("program", Just HomeR)
-  breadcrumb  AdminR = return ("admin profile", Just HomeR)
+  breadcrumb HomeR = return ("Главная", Nothing)
+  breadcrumb (AuthR _) = return ("Вход", Just HomeR)
+  breadcrumb ProfileR = return ("Профиль", Just HomeR)
+  breadcrumb  ProgramR = return ("Программа мероприятия", Just HomeR)
+  breadcrumb  AdminR = return ("Администратор", Just HomeR)
+  breadcrumb  ContactsR = return ("Контакты", Just HomeR)
   breadcrumb  _ = return ("home2", Nothing)
 
 -- How to run database actions.
