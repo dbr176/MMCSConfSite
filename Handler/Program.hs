@@ -6,9 +6,11 @@ import qualified System.IO as SIO
 import Text.Read
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Text.Julius (RawJS (..))
+import Control.Monad
 
 getProgramR :: Handler Html
 getProgramR = do
+     res <- runDB $ getReports
      defaultLayout [whamlet|
             <table>
                 <thead>
