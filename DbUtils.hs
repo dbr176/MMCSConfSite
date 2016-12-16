@@ -47,6 +47,10 @@ Subscriptions
     reportid ReportId
 -}
 
+getReports = do
+    dat <- selectList [] []
+    return (dat :: [Entity Report])
+
 maybeToEither v msg f =
     case v of
         Nothing -> Left msg
