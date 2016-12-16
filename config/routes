@@ -12,6 +12,8 @@
 
 /contacts ContactsR GET
 
+/aboutconf AboutConfR GET
+
 /comments CommentR POST
 
 /profile ProfileR GET

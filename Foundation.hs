@@ -107,10 +107,15 @@ instance Yesod App where
                     , menuItemAccessCallback = True
                     }
                 , NavbarLeft $ MenuItem
+                    { menuItemLabel = "О конференции"
+                    , menuItemRoute = AboutConfR
+                    , menuItemAccessCallback = True
+                    }
+                , NavbarLeft $ MenuItem
                     { menuItemLabel = "Контакты"
                     , menuItemRoute = ContactsR
                     , menuItemAccessCallback = True
-                    }
+                    }    
                 , NavbarLeft $ MenuItem
                     { menuItemLabel = "Profile"
                     , menuItemRoute = ProfileR
@@ -157,6 +162,7 @@ instance Yesod App where
     isAuthorized (StaticR _) _ = return Authorized
     isAuthorized AdminR _ = return Authorized
     isAuthorized ProgramR _ = return Authorized
+    isAuthorized AboutConfR _ = return Authorized
     isAuthorized ContactsR _ = return Authorized
 
     isAuthorized ProfileR _ = isAuthenticated
@@ -197,6 +203,7 @@ instance YesodBreadcrumbs App where
   breadcrumb ProfileR = return ("Профиль", Just HomeR)
   breadcrumb  ProgramR = return ("Программа мероприятия", Just HomeR)
   breadcrumb  AdminR = return ("Администратор", Just HomeR)
+  breadcrumb  AboutConfR = return ("О конференции", Just HomeR)
   breadcrumb  ContactsR = return ("Контакты", Just HomeR)
   breadcrumb  _ = return ("home2", Nothing)
 

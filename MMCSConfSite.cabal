@@ -27,6 +27,7 @@ library
                      Handler.Profile
                      Handler.Program
                      Handler.Contacts
+                     Handler.AboutConf
                      DbUtils
 
     if flag(dev) || flag(library-only)
