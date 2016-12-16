@@ -15,15 +15,15 @@ getProgramR = do
      let rs =  fmap (\(Entity _ x) -> (reportTitle x, reportReporter x, reportTime x, reportDay x, reportRoom x, reportSeats x)) rep
      defaultLayout [whamlet|
      <center>
-            <table>
+            <table border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
                     <thead>
                         <tr>
-                        <th>Название  </th>
-                        <th>Докладчик </th>
-                        <th>Время мероприятия </th>
-                        <th>Дата мероприятия </th>
-                        <th>Аудитория </th>
-                        <th>Место </th>
+                        <th bgcolor="#FFFF00">Название  </th>
+                        <th bgcolor="#FFFF00">Докладчик </th>
+                        <th bgcolor="#FFFF00">Время мероприятия </th>
+                        <th bgcolor="#FFFF00" >Дата мероприятия </th>
+                        <th bgcolor="#FFFF00">Аудитория </th>
+                        <th bgcolor="#FFFF00">Место </th>
                     <tbody>
                         $forall (name, repr, tm, dy, roo, sts) <- rs
                             <tr>
@@ -33,6 +33,7 @@ getProgramR = do
                                 <td>#{dy}</td>
                                 <td>#{show $ fromSqlKey  roo}</td>
                                 <td>#{show sts}</td>
+                               
                 
     |]
 
