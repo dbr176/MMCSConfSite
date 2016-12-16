@@ -38,13 +38,14 @@ getAdminR = do
     (widget, enctype) <- generateFormPost roomsForm
     defaultLayout
         [whamlet|
-            <p>
-                Загрузка файла:
-            <p> rooms.txt - файл аудиторий
-            <p> reports.txt - файл докладов
-            <form method=post action=@{AdminR} enctype=#{enctype}>
-                ^{widget}
-                <button>Отправить
+            <center>
+                <p>
+                    Загрузка файла:
+                <p> rooms.txt - файл аудиторий
+                <p> reports.txt - файл докладов
+                <form method=post action=@{AdminR} enctype=#{enctype}>
+                    ^{widget}
+                    <button>Отправить
         |]
 
 postAdminR :: Handler Html
