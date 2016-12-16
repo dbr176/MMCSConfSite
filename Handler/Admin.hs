@@ -21,7 +21,7 @@ data LoadRoomsForm = LoadRoomsForm {
 
 data ReportFileCommand =
       RemoveReport Text
-    | AddReport Text Text TimeOfDay Day Text
+    | AddReport Text Text Text Text Text
     | ReportParsingError
 
 
@@ -116,7 +116,7 @@ addReportsFromFile path = do
 
 parseReport ["a", title, reporter, time, day, roomid] = 
     AddReport (fromString title) (fromString reporter) 
-              (read time) (read day) (fromString roomid)
+              (fromString time) (fromString day) (fromString roomid)
 parseReport _ = ReportParsingError
 
 chooseFileType filename

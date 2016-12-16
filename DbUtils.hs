@@ -1,3 +1,5 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module DbUtils where
 
 import Control.Monad.Logger                 (liftLoc, runLoggingT)
@@ -62,8 +64,8 @@ maybeToEither v msg f =
 
 -- Добавляет новую аудиторию
 addRoom ident seats = do insert $ Room ident seats
- 
-addReport title reporter time day roomid = do
+
+addReport title reporter time (day :: Text) roomid = do
     room <- selectFirst [ RoomRoomident ==. roomid ] []
 
     case room of 

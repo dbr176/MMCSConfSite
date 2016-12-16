@@ -20,8 +20,8 @@ Room
 Report
     title Text
     reporter Text
-    time TimeOfDay
-    day Day
+    time Text
+    day Text
     room RoomId
     seats Int
     UniqueReport title
