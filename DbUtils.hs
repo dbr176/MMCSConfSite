@@ -58,16 +58,28 @@ maybeToEither v msg f =
 
 -- Добавляет новую аудиторию
 addRoom ident seats = do insert $ Room ident seats
+
 addReport title reporter time day roomid = do
     room <- selectFirst [ RoomRoomident ==. roomid ] []
-    return $ maybeToEither room
-        roomNotExistMsg $
-        \(Entity xid x) -> do
-            Right $ insert 
-                  $ Report title reporter time day xid (roomMaxseats x)
+
+    case room of 
+        Nothing -> return ()
+        Just (Entity xid x) -> do
+            (insert 
+                  $ Report title reporter time day xid (roomMaxseats x))
+                  >> return ()
+
+    --return $ maybeToEither room
+    --    roomNotExistMsg $
+    --    \(Entity xid x) -> do
+    --        Right $ insert 
+    --              $ Report title reporter time day xid (roomMaxseats x)
 
 removeRoom ident = do
     deleteWhere [RoomRoomident ==. ident]
+
+removeReport ident = do
+    deleteWhere [ReportTitle ==. ident]
 
 -- Занимает место на докладе
 removeSeat (Entity rpid r) = do

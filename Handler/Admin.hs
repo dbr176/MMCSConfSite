@@ -1,15 +1,34 @@
 module Handler.Admin where
 
+-- TODO: Сделать возможность загрузки CSV-файлов
+
 import Import
 import DbUtils
 import qualified System.IO as SIO
 import Text.Read
+import Data.Time
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Text.Julius (RawJS (..))
+
+data LoadFileType =
+      RoomsFile FilePath
+    | ReportsFile FilePath
+    | UnknownFile
 
 data LoadRoomsForm = LoadRoomsForm {
     fileInfo :: FileInfo
 }
+
+data ReportFileCommand =
+      RemoveReport Text
+    | AddReport Text Text TimeOfDay Day Text
+    | ReportParsingError
+
+
+data RoomFileCommand =
+      RemoveRoom Text
+    | AddRoom Text Int
+    | RoomParsingError
 
 uploadDirectory :: FilePath
 uploadDirectory = "static"
@@ -20,12 +39,12 @@ getAdminR = do
     defaultLayout
         [whamlet|
             <p>
-                The widget generated contains only the contents
-                of the form, not the form tag itself. So...
+                Загрузка файла:
+            <p> rooms.txt - файл аудиторий
+            <p> reports.txt - файл докладов
             <form method=post action=@{AdminR} enctype=#{enctype}>
                 ^{widget}
-                <p>It also doesn't include the submit button.
-                <button>Submit
+                <button>Отправить
         |]
 
 postAdminR :: Handler Html
@@ -33,10 +52,15 @@ postAdminR = do
     ((result, widget), enctype) <- runFormPost roomsForm
     case result of
         FormSuccess file -> do
-            path <- writeToServer $ fileInfo file
-            runDB (addRoomsFromFile path)
-
-            defaultLayout [whamlet|<p>Загружено|]
+            fl <- writeToServer $ fileInfo file
+            case fl of
+                RoomsFile path -> 
+                    runDB (addRoomsFromFile path) >>
+                    defaultLayout [whamlet|<p>Аудитории загружены.|]
+                ReportsFile path -> 
+                    runDB (addReportsFromFile path) >>
+                    defaultLayout [whamlet|<p>Отчёты загружены.|]
+                _ -> defaultLayout [whamlet|<p>Неизвестный файл.|]
         _ -> defaultLayout
             [whamlet|
                 <p>Invalid input, let's try again.
@@ -44,11 +68,6 @@ postAdminR = do
                     ^{widget}
                     <button>Submit
             |]
-
-data RoomFileCommand =
-      RemoveRoom Text
-    | AddRoom Text Int
-    | RoomParsingError
 
 parseRoom :: [String] -> RoomFileCommand
 parseRoom ["a", rid, seats] = AddRoom (fromString rid) (read seats)
@@ -60,17 +79,38 @@ addRoomsFromFile path = do
     let rooms =  map (parseRoom . words) $ lines content 
     forM_ rooms $ \room ->
         case room of
-            RemoveRoom idnt -> removeRoom idnt >> return ()
-            AddRoom idnt seats -> addRoom idnt seats >> return ()
+            RemoveRoom idnt -> (removeRoom idnt) >> return ()
+            AddRoom idnt seats -> ( addRoom idnt seats) >> return ()
             RoomParsingError -> return ()
     return ()
-        
-writeToServer :: FileInfo -> Handler FilePath
+
+addReportsFromFile path = do
+    content <- liftIO $ SIO.readFile $ filePath path
+    let reps = map (parseReport . words) $ lines content
+    forM_ reps $ \rep ->
+        case rep of
+            RemoveReport idnt -> (removeReport idnt) >> return ()
+            AddReport title reptr time day rid -> do
+                (addReport title reptr time day rid) >> return ()
+            ReportParsingError -> return ()
+
+
+parseReport ["a", title, reporter, time, day, roomid] = 
+    AddReport (fromString title) (fromString reporter) 
+              (read time) (read day) (fromString roomid)
+parseReport _ = ReportParsingError
+
+chooseFileType filename
+    | filename == "rooms.txt" = RoomsFile filename
+    | filename ==  "reports.txt" = ReportsFile filename
+    | otherwise = UnknownFile
+
+writeToServer :: FileInfo -> Handler LoadFileType --FilePath
 writeToServer file = do
     let filename = unpack $ fileName file
         path = filePath filename
     liftIO $ fileMove file path
-    return filename
+    return $ chooseFileType filename
 
 filePath :: FilePath -> FilePath
 filePath f = uploadDirectory </> f
