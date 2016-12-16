@@ -92,7 +92,7 @@ instance Yesod App where
         -- Define the menu items of the header.
         let menuItems =
                 [ NavbarLeft $ MenuItem
-                    { menuItemLabel = "Стартовая"
+                    { menuItemLabel = "Главная"
                     , menuItemRoute = HomeR
                     , menuItemAccessCallback = True
                     }
@@ -104,6 +104,11 @@ instance Yesod App where
                 , NavbarLeft $ MenuItem
                     { menuItemLabel = "Программа"
                     , menuItemRoute = ProgramR
+                    , menuItemAccessCallback = True
+                    }
+                , NavbarLeft $ MenuItem
+                    { menuItemLabel = "Контакты"
+                    , menuItemRoute = ContactsR
                     , menuItemAccessCallback = True
                     }
                 , NavbarLeft $ MenuItem
@@ -152,6 +157,7 @@ instance Yesod App where
     isAuthorized (StaticR _) _ = return Authorized
     isAuthorized AdminR _ = return Authorized
     isAuthorized ProgramR _ = return Authorized
+    isAuthorized ContactsR _ = return Authorized
 
     isAuthorized ProfileR _ = isAuthenticated
 

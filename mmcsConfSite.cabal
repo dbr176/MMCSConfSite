@@ -26,6 +26,7 @@ library
                      Handler.Comment
                      Handler.Profile
                      Handler.Program
+                     Handler.Contacts
                      DbUtils
 
     if flag(dev) || flag(library-only)
