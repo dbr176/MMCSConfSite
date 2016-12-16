@@ -58,6 +58,7 @@ maybeToEither v msg f =
 
 -- Добавляет новую аудиторию
 addRoom ident seats = do insert $ Room ident seats
+ 
 
 addReport title reporter time day roomid = do
     room <- selectFirst [ RoomRoomident ==. roomid ] []

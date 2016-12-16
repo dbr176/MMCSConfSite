@@ -80,7 +80,11 @@ addRoomsFromFile path = do
     forM_ rooms $ \room ->
         case room of
             RemoveRoom idnt -> (removeRoom idnt) >> return ()
-            AddRoom idnt seats -> ( addRoom idnt seats) >> return ()
+            AddRoom idnt seats -> do
+                rs <- selectFirst [RoomRoomident ==. idnt] []
+                case rs of
+                    Nothing -> (addRoom idnt seats) >> return ()
+                    _ -> return ()
             RoomParsingError -> return ()
     return ()
 
@@ -91,6 +95,7 @@ addReportsFromFile path = do
         case rep of
             RemoveReport idnt -> (removeReport idnt) >> return ()
             AddReport title reptr time day rid -> do
+                reports <- selectList [ReportTitle ==. title] []
                 (addReport title reptr time day rid) >> return ()
             ReportParsingError -> return ()
 
