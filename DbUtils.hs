@@ -51,6 +51,10 @@ getReports = do
     dat <- selectList [] []
     return (dat :: [Entity Report])
 
+getRooms = do
+    dat <- selectList [] []
+    return (dat :: [Entity Room])
+
 maybeToEither v msg f =
     case v of
         Nothing -> Left msg
@@ -59,7 +63,6 @@ maybeToEither v msg f =
 -- Добавляет новую аудиторию
 addRoom ident seats = do insert $ Room ident seats
  
-
 addReport title reporter time day roomid = do
     room <- selectFirst [ RoomRoomident ==. roomid ] []
 

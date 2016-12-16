@@ -36,6 +36,8 @@ uploadDirectory = "static"
 getAdminR :: Handler Html
 getAdminR = do 
     (widget, enctype) <- generateFormPost roomsForm
+    rooms <- (runDB $ getRooms)
+    let rs =  fmap (\(Entity _ x) -> (roomRoomident x, roomMaxseats x)) rooms
     defaultLayout
         [whamlet|
             <center>
@@ -46,6 +48,17 @@ getAdminR = do
                 <form method=post action=@{AdminR} enctype=#{enctype}>
                     ^{widget}
                     <button>Отправить
+                <table>
+                    <thead>
+                        <tr>
+                        <th>Аудитория</th>
+                        <th>Всего мест</th>
+                    <tbody>
+                        $forall (idn, sts) <- rs
+                            <tr>
+                                <td>#{idn}</td>
+                                <td>#{show sts}</td>
+                
         |]
 
 postAdminR :: Handler Html
