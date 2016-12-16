@@ -11,17 +11,25 @@ import Control.Monad
 getProgramR :: Handler Html
 getProgramR = do
      rep <- runDB $ getReports
-     let rs =  fmap (\(Entity _ x) -> (reportTitle x, reportReporter x)) rep
+     let rs =  fmap (\(Entity _ x) -> (reportTitle x, reportReporter x, reportTime x, reportDay x, reportRoom x, reportSeats x)) rep
      defaultLayout [whamlet|
             <table>
                     <thead>
                         <tr>
                         <th>Название  </th>
                         <th>Докладчик </th>
+                        <th>Время мероприятия </th>
+                        <th>Дата мероприятия </th>
+                        <th>Аудитория </th>
+                        <th>Место </th>
                     <tbody>
-                        $forall (idn, sts) <- rs
+                        $forall (name, repr, tm, dy, roo, sts) <- rs
                             <tr>
-                                <td>#{idn}</td>
+                                <td>#{name}</td>
+                                <td>#{repr}</td>
+                                <td>#{tm}</td>
+                                <td>#{dy}</td>
+                                <td>#{show  roo}</td>
                                 <td>#{show sts}</td>
                 
     |]
