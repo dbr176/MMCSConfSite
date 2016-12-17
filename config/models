@@ -25,6 +25,14 @@ Report
     room RoomId
     seats Int
     UniqueReport title
+ReportInfo
+    title ReportId
+    info Text
+    UniqueReportInfo title
+ReportState
+    title ReportId
+    approved Bool
+    UniqueReportState title
 Subscriptions
     userid UserId
     reportid ReportId
