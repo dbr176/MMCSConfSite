@@ -77,6 +77,10 @@ getReports = do
     dat <- selectList [] []
     return (dat :: [Entity Report])
   
+getApprovedReports = do
+    reps <- getReports
+    return $ filterM (\(Entity key _) -> isApproved key >>= return) reps
+
 getNotApprovedReports = do
     reps <- getReports
     return $ filterM (\(Entity key _) -> isApproved key >>= (return . not)) reps
@@ -99,9 +103,8 @@ addReport title reporter time (day :: Text) roomid = do
     case room of 
         Nothing -> return ()
         Just (Entity xid x) -> do
-            (insert 
-                  $ Report title reporter time day xid (roomMaxseats x))
-                  >> return ()
+            r <- addNewReport title reporter time day xid (roomMaxseats x)
+            return ()
 
     --return $ maybeToEither room
     --    roomNotExistMsg $
