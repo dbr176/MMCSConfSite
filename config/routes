@@ -8,6 +8,8 @@
 
 /admin AdminR GET POST
 
+/approve/#Text ApproveR GET
+
 /program ProgramR GET POST
 
 /contacts ContactsR GET

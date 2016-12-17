@@ -9,7 +9,9 @@ import Text.Read
 import Data.Time
 import Data.List.Split
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
-import Text.Julius (RawJS (..))
+--import Text.Julius (RawJS (..))
+import Database.Persist.Sql
+import Database.Persist
 
 data LoadFileType =
       RoomsFile FilePath
@@ -38,7 +40,9 @@ getAdminR :: Handler Html
 getAdminR = do 
     (widget, enctype) <- generateFormPost roomsForm
     rooms <- (runDB $ getRooms)
+    reports <- (runDB $ getNotApprovedReports)
     let rs =  fmap (\(Entity _ x) -> (roomRoomident x, roomMaxseats x)) rooms
+    
     defaultLayout
         [whamlet|
             <center>
@@ -59,7 +63,18 @@ getAdminR = do
                             <tr>
                                 <td>#{idn}</td>
                                 <td>#{show sts}</td>
-                
+                <table>
+                    <thead>
+                        <tr>
+                        <th>Название</th>
+                        <th>Докладчик</th>
+                    <tbody>
+                        $forall (Entity _ (Report title reporter _ _ _ _)) <- reports
+                             <tr>
+                                <td>#{title}</td>
+                                <td>#{reporter}</td>
+                                <td><a href="/approve/#{title}">Подтвердить 
+                        
         |]
 
 postAdminR :: Handler Html
@@ -71,11 +86,11 @@ postAdminR = do
             case fl of
                 RoomsFile path -> 
                     runDB (addRoomsFromFile path) >>
-                    defaultLayout [whamlet|<p>Аудитории загружены.|]
+                    defaultLayout [whamlet|<p>Аудитории загружены. <a href="/admin">Вернуться|]
                 ReportsFile path -> 
                     runDB (addReportsFromFile path) >>
-                    defaultLayout [whamlet|<p>Отчёты загружены.|]
-                _ -> defaultLayout [whamlet|<p>Неизвестный файл.|]
+                    defaultLayout [whamlet|<p>Отчёты загружены. <a href="/admin">Вернуться |]
+                _ -> defaultLayout [whamlet|<p>Неизвестный файл. <a href="/admin">Вернуться|]
         _ -> defaultLayout
             [whamlet|
                 <p>Ошибка, попробуйте снова.
@@ -83,6 +98,11 @@ postAdminR = do
                     ^{widget}
                     <button>Отправить
             |]
+
+getApproveR :: Text -> Handler Html
+getApproveR title = do
+    _ <- runDB $ approve title
+    getAdminR
 
 parseRoom :: [String] -> RoomFileCommand
 parseRoom ["a", rid, seats] = AddRoom (fromString rid) (read seats)
@@ -103,6 +123,7 @@ addRoomsFromFile path = do
             RoomParsingError -> return ()
     return ()
 
+
 addReportsFromFile path = do
     content <- liftIO $ SIO.readFile $ filePath path
     let reps = map (parseReport . (splitOn ";")) $ lines content
@@ -111,10 +132,11 @@ addReportsFromFile path = do
             RemoveReport idnt -> (removeReport idnt) >> return ()
             AddReport title reptr time day rid -> do
                 reports <- selectList [ReportTitle ==. title] []
-                (addReport title reptr time day rid) >> return ()
+                (addNewReport title "" reptr time day rid 0) >> return ()
             ReportParsingError -> return ()
 
 
+parseReport :: [String] -> ReportFileCommand
 parseReport ["a", title, reporter, time, day, roomid] = 
     AddReport (fromString title) (fromString reporter) 
               (fromString time) (fromString day) (fromString roomid)
