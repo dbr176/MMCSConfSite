@@ -96,6 +96,7 @@ library
                  , time
                  , case-insensitive
                  , wai
+                 , split
 
 executable         MMCSConfSite
     if flag(library-only)

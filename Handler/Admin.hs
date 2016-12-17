@@ -7,6 +7,7 @@ import DbUtils
 import qualified System.IO as SIO
 import Text.Read
 import Data.Time
+import Data.List.Split
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Text.Julius (RawJS (..))
 
@@ -90,7 +91,7 @@ parseRoom _ = RoomParsingError
 
 addRoomsFromFile path = do
     content <- liftIO $ SIO.readFile $ filePath path
-    let rooms =  map (parseRoom . words) $ lines content 
+    let rooms =  map (parseRoom . (splitOn ";")) $ lines content 
     forM_ rooms $ \room ->
         case room of
             RemoveRoom idnt -> (removeRoom idnt) >> return ()
@@ -104,7 +105,7 @@ addRoomsFromFile path = do
 
 addReportsFromFile path = do
     content <- liftIO $ SIO.readFile $ filePath path
-    let reps = map (parseReport . words) $ lines content
+    let reps = map (parseReport . (splitOn ";")) $ lines content
     forM_ reps $ \rep ->
         case rep of
             RemoveReport idnt -> (removeReport idnt) >> return ()
