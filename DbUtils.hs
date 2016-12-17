@@ -61,7 +61,7 @@ addNewReport title info reporter time day room seats = do
     rid <- insert $ Report title reporter time day room seats
     insert $ ReportInfo rid info
     insert $ ReportState rid False
-    return ()
+    return rid
 
 
 isApproved title = do
