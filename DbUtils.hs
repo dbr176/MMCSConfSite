@@ -19,11 +19,15 @@ import Network.Wai.Middleware.RequestLogger (Destination (Logger),
                                              mkRequestLogger, outputFormat)
 import System.Log.FastLogger                (defaultBufSize, newStdoutLoggerSet,
                                              toLogStr)
-
+import Database.Persist.Sql
 
 ---------------------------------------------
 -- Функции для работы с БД
 ---------------------------------------------
+
+--instance PathPiece (Key Report) where
+    --toPathPiece (Natural i) = T.pack $ show i
+    --fromPathPiece s = 
 
 roomNotExistMsg = "Room does not exist"
 userNotExist    = "User does not exist"
@@ -57,21 +61,39 @@ Subscriptions
     reportid ReportId
 -}
 
+reportByTitle title = selectFirst [ReportTitle ==. title] [] 
+
 addNewReport title info reporter time day room seats = do
-    rid <- insert $ Report title reporter time day room seats
-    insert $ ReportInfo rid info
-    insert $ ReportState rid False
+    -- TODO: обработка ситуации, когда аудитория не найдена
+    Just (Entity roomKey _) <- selectFirst [RoomRoomident ==. room] [] 
+    rid <- insert $ Report title reporter time day roomKey seats
+    _ <- insert $ ReportInfo rid info
+    _ <- insert $ ReportState rid False
     return rid
 
 
-isApproved title = do
-    r <- selectFirst [(ReportStateTitle ==. title),(ReportStateApproved ==. True)] []
+{-
+ isApproved :: forall (m :: * -> *).
+               MonadIO m =>
+               Key Report -> ReaderT SqlBackend m Bool
+-}
+isApprovedKey k = do
+    r <- selectFirst [(ReportStateTitle ==. k),(ReportStateApproved ==. True)] []
     case r of 
         Nothing -> return False
         _ -> return True
 
+isApproved title = do
+    -- TODO: обработка ситуации, когда не найден доклад
+    Just (Entity k _) <- reportByTitle title
+    isApprovedKey k
+
 approve title = do
-    updateWhere [ ReportStateTitle ==. title ] [ ReportStateApproved =. True]
+    Just (Entity kr (Report _ _ _ _ r _)) <- reportByTitle title 
+    _ <- updateWhere [ ReportStateTitle ==. kr] [ ReportStateApproved =. True]
+    Just (Room _ s) <- get r
+    _ <- updateWhere [ ReportTitle ==. title] [ ReportSeats =. s]
+    return ()
 
 getReports = do
     dat <- selectList [] []
@@ -79,12 +101,15 @@ getReports = do
   
 getApprovedReports = do
     reps <- getReports
-    return $ filterM (\(Entity key _) -> isApproved key >>= return) reps
+    filterM (\(Entity key _) -> isApprovedKey key >>= return) reps
 
 getNotApprovedReports = do
     reps <- getReports
-    return $ filterM (\(Entity key _) -> isApproved key >>= (return . not)) reps
+    filterM (\(Entity key _) -> isApprovedKey key >>= (return . not)) reps
 
+getRooms :: forall (m :: * -> *).
+            MonadIO m =>
+            ReaderT SqlBackend m [Entity Room]
 getRooms = do
     dat <- selectList [] []
     return (dat :: [Entity Room])
