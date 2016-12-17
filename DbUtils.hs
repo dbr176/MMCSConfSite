@@ -39,19 +39,47 @@ Room
 Report
     title Text
     reporter Text
-    time TimeOfDay
-    day Day
+    time Text
+    day Text
     room RoomId
     seats Int
     UniqueReport title
+ReportInfo
+    title ReportId
+    info Text
+    UniqueReportInfo title
+ReportState
+    title ReportId
+    approved Bool
+    UniqueReportState title
 Subscriptions
     userid UserId
     reportid ReportId
 -}
 
+addNewReport title info reporter time day room seats = do
+    rid <- insert $ Report title reporter time day room seats
+    insert $ ReportInfo rid info
+    insert $ ReportState rid False
+    return ()
+
+
+isApproved title = do
+    r <- selectFirst [(ReportStateTitle ==. title),(ReportStateApproved ==. True)] []
+    case r of 
+        Nothing -> return False
+        _ -> return True
+
+approve title = do
+    updateWhere [ ReportStateTitle ==. title ] [ ReportStateApproved =. True]
+
 getReports = do
     dat <- selectList [] []
     return (dat :: [Entity Report])
+  
+getNotApprovedReports = do
+    reps <- getReports
+    return $ filterM (\(Entity key _) -> isApproved key >>= (return . not)) reps
 
 getRooms = do
     dat <- selectList [] []
