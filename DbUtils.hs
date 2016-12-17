@@ -103,8 +103,9 @@ addReport title reporter time (day :: Text) roomid = do
     case room of 
         Nothing -> return ()
         Just (Entity xid x) -> do
-            r <- addNewReport title reporter time day xid (roomMaxseats x)
-            return ()
+            (insert 
+                  $ Report title reporter time day xid (roomMaxseats x))
+                  >> return ()
 
     --return $ maybeToEither room
     --    roomNotExistMsg $
