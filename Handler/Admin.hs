@@ -78,10 +78,10 @@ postAdminR = do
                 _ -> defaultLayout [whamlet|<p>Неизвестный файл.|]
         _ -> defaultLayout
             [whamlet|
-                <p>Invalid input, let's try again.
+                <p>Ошибка, попробуйте снова.
                 <form method=post action=@{AdminR} enctype=#{enctype}>
                     ^{widget}
-                    <button>Submit
+                    <button>Отправить
             |]
 
 parseRoom :: [String] -> RoomFileCommand
@@ -138,4 +138,4 @@ filePath f = uploadDirectory </> f
 roomsForm :: Form LoadRoomsForm
 roomsForm = do
     renderBootstrap3 BootstrapBasicForm $ LoadRoomsForm 
-                                       <$> fileAFormReq "Choose a file"
+                                       <$> fileAFormReq "Выберите файл"
