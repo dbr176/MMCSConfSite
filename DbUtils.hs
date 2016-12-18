@@ -21,28 +21,19 @@ import System.Log.FastLogger                (defaultBufSize, newStdoutLoggerSet,
                                              toLogStr)
 import Database.Persist.Sql
 
----------------------------------------------
--- Функции для работы с БД
----------------------------------------------
 
---instance PathPiece (Key Report) where
-    --toPathPiece (Natural i) = T.pack $ show i
-    --fromPathPiece s = 
-
-roomNotExistMsg = "Room does not exist"
-userNotExist    = "User does not exist"
-reportNotExist  = "Report does not exist"
-noFreeSeats     = "There are no free seats"
-userRegistered  = "You have already registered" 
-okMsg           = "OK"
-
-checkRequestCode = (== okMsg)
+data FullReport = FullReport {
+                    frTitle :: Text,
+                    frReporter :: Text,
+                    frTime :: Text,
+                    frDay :: Text,
+                    frRoom :: Text,
+                    frSeats :: Int,
+                    frInfo :: Text,
+                    frApproved :: Bool
+}
 
 {-
-Room
-    roomident Text
-    maxseats Int
-    UniqueRoom roomident
 Report
     title Text
     reporter Text
@@ -59,10 +50,45 @@ ReportState
     title ReportId
     approved Bool
     UniqueReportState title
-Subscriptions
-    userid UserId
-    reportid ReportId
 -}
+
+---------------------------------------------
+-- Функции для работы с БД
+---------------------------------------------
+
+
+roomNotExistMsg = "Room does not exist"
+userNotExist    = "User does not exist"
+reportNotExist  = "Report does not exist"
+noFreeSeats     = "There are no free seats"
+userRegistered  = "You have already registered" 
+okMsg           = "OK"
+
+checkRequestCode = (== okMsg)
+
+makeFullReport title = do
+    rep <- selectFirst [ReportTitle ==. title] []
+    case rep of
+        Nothing -> return $ Left reportNotExist
+        Just (Entity key (Report _ reporter time day room seats)) -> do
+            infoData <- selectFirst [ReportInfoTitle ==. key] []
+            let info = 
+                        case infoData of
+                            Nothing -> ""
+                            Just (Entity _ (ReportInfo _ i)) -> i
+            apprData <- selectFirst [ReportStateTitle ==. key] []
+            let appr =
+                        case apprData of
+                            Nothing -> False
+                            Just (Entity _ (ReportState _ a)) -> a
+            roomData <- get room
+            let roomName = 
+                        case roomData of
+                            Nothing -> ""
+                            Just (Room n _) -> n
+
+            return $ Right $ FullReport title reporter time day roomName seats info appr
+
 
 reportByTitle title = selectFirst [ReportTitle ==. title] [] 
 
