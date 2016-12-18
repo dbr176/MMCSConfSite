@@ -34,6 +34,9 @@ userNotExist    = "User does not exist"
 reportNotExist  = "Report does not exist"
 noFreeSeats     = "There are no free seats"
 userRegistered  = "You have already registered" 
+okMsg           = "OK"
+
+checkRequestCode = (== okMsg)
 
 {-
 Room
@@ -65,11 +68,14 @@ reportByTitle title = selectFirst [ReportTitle ==. title] []
 
 addNewReport title info reporter time day room seats = do
     -- TODO: обработка ситуации, когда аудитория не найдена
-    Just (Entity roomKey _) <- selectFirst [RoomRoomident ==. room] [] 
-    rid <- insert $ Report title reporter time day roomKey seats
-    _ <- insert $ ReportInfo rid info
-    _ <- insert $ ReportState rid False
-    return rid
+    rme <- selectFirst [RoomRoomident ==. room] [] 
+    case rme of
+        Just (Entity roomKey _) -> do
+            rid <- insert $ Report title reporter time day roomKey seats
+            _ <- insert $ ReportInfo rid info
+            _ <- insert $ ReportState rid False
+            return okMsg
+        Nothing -> return roomNotExistMsg
 
 
 {-
@@ -126,17 +132,11 @@ addReport title reporter time (day :: Text) roomid = do
     room <- selectFirst [ RoomRoomident ==. roomid ] []
 
     case room of 
-        Nothing -> return ()
+        Nothing -> return roomNotExistMsg
         Just (Entity xid x) -> do
             (insert 
                   $ Report title reporter time day xid (roomMaxseats x))
-                  >> return ()
-
-    --return $ maybeToEither room
-    --    roomNotExistMsg $
-    --    \(Entity xid x) -> do
-    --        Right $ insert 
-    --              $ Report title reporter time day xid (roomMaxseats x)
+                  >> return okMsg
 
 removeRoom ident = do
     deleteWhere [RoomRoomident ==. ident]
@@ -148,9 +148,9 @@ removeReport ident = do
 removeSeat (Entity rpid r) = do
     if (reportSeats r) > 0 
         then do
-            return $
-                Right $ update rpid [ReportSeats =. reportSeats r - 1]
-        else do return $ Left noFreeSeats
+            _ <- update rpid [ReportSeats =. reportSeats r - 1]
+            return okMsg
+        else do return noFreeSeats
 
 -- Занимает место для пользователя
 -- TODO: убрать case'ы
@@ -160,11 +160,11 @@ visitReport uid rid = do
 
     case user of
         Nothing ->
-            return $ Left userNotExist
+            return $ userNotExist
         Just (Entity usid _) -> 
             case report of 
                 Nothing -> 
-                    return $ Left reportNotExist
+                    return $ reportNotExist
                 Just (Entity rpid r) -> do
                     subscr  <- selectFirst  [ SubscriptionsUserid ==. usid, 
                                             SubscriptionsReportid ==. rpid] []
@@ -172,4 +172,4 @@ visitReport uid rid = do
                         Nothing -> 
                             removeSeat (Entity rpid r)
                         Just _  -> 
-                            Left userRegistered
+                            userRegistered
