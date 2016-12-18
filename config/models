@@ -36,4 +36,8 @@ ReportState
 Subscriptions
     userid UserId
     reportid ReportId
+UserInfo
+    ident UserId
+    accommodation Text Maybe
+    UniqueUserInfo ident
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)
