@@ -27,7 +27,7 @@ getContactsR = do  defaultLayout [whamlet|<div .container>
                                             <h2  >Деканат:</h2>
                                             кабинет 111
                                             <h2>Место на карте:</h2>
-                                            <iframe src="https://api-maps.yandex.ru/frame/v1/-/CZHr643B" width="560" height="400" frameborder="0"></iframe>
+                                            <iframe src="https://api-maps.yandex.ru/frame/v1/-/CZH8b6Ny" width="660" height="500" frameborder="0"></iframe>
                                                 
                                     |]
 
