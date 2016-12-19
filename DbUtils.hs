@@ -92,6 +92,10 @@ makeFullReport title = do
 
 reportByTitle title = selectFirst [ReportTitle ==. title] [] 
 
+getSponsors = do
+    l <- selectList [] []
+    return $ (l :: [Entity Sponsor])
+
 addNewReport title info reporter time day room seats = do
     -- TODO: обработка ситуации, когда аудитория не найдена
     rme <- selectFirst [RoomRoomident ==. room] [] 
