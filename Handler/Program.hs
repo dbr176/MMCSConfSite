@@ -26,7 +26,7 @@ getProgramR = do
                         <th bgcolor="#FFFF00" >Дата мероприятия </th>
                         <th bgcolor="#FFFF00">Аудитория </th>
                         <th bgcolor="#FFFF00">Свободные места </th>
-                         <th bgcolor="#FFFF00">Всего мест </th>
+                        <th bgcolor="#FFFF00">Всего мест </th>
                     <tbody>
                         $forall ((name, repr, tm, dy, _, sts), Just (Room roo mx_seats)) <- rsr
                             <tr>

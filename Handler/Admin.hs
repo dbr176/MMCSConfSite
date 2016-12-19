@@ -53,22 +53,25 @@ getAdminR = do
                 <form method=post action=@{AdminR} enctype=#{enctype}>
                     ^{widget}
                     <button>Отправить
+                    <p>
                 <table  border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
                     <thead>
                         <tr>
-                        <th>Аудитория</th>
-                        <th>Всего мест</th>
+                        <th bgcolor="#FFFF00">Аудитория</th>
+                        <th bgcolor="#FFFF00">Всего мест</th>
                     <tbody>
                         $forall (idn, sts) <- rs
                             <tr>
                                 <td>#{idn}</td>
                                 <td>#{show sts}</td>
                 <br>
+                <p> 
                 <table border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
                     <thead>
                         <tr>
-                        <th>Название</th>
-                        <th>Докладчик</th>
+                        <th bgcolor="#FFFF00">Название</th>
+                        <th bgcolor="#FFFF00">Докладчик</th>
+                        <th bgcolor="#FFFF00">Ожидающие подтверждения</th>
                     <tbody>
                         $forall (Entity _ (Report title reporter _ _ _ _)) <- reports
                              <tr>
