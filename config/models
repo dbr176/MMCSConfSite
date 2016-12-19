@@ -40,4 +40,8 @@ UserInfo
     ident UserId
     accommodation Text Maybe
     UniqueUserInfo ident
+Sponsor
+    name Text
+    reference Text Maybe
+    UniqueSponsor name
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)
