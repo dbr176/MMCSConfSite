@@ -7,12 +7,14 @@ import Text.Read
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Text.Julius (RawJS (..))
 import Control.Monad
-import Database.Persist.Sql
+import Database.Persist.Sql as SQL
 
 getProgramR :: Handler Html
 getProgramR = do
      rep <- runDB $ getReports
      let rs =  fmap (\(Entity _ x) -> (reportTitle x, reportReporter x, reportTime x, reportDay x, reportRoom x, reportSeats x)) rep
+     rooms <- sequence $ map (\(_,_,_,_,r,_) -> runDB $ SQL.get r) rs 
+     let rsr = zipWith (,) rs rooms
      defaultLayout [whamlet|
      <center>
             <table border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
@@ -23,17 +25,18 @@ getProgramR = do
                         <th bgcolor="#FFFF00">Время мероприятия </th>
                         <th bgcolor="#FFFF00" >Дата мероприятия </th>
                         <th bgcolor="#FFFF00">Аудитория </th>
-                        <th bgcolor="#FFFF00">Место </th>
+                        <th bgcolor="#FFFF00">Свободные места </th>
+                         <th bgcolor="#FFFF00">Всего мест </th>
                     <tbody>
-                        $forall (name, repr, tm, dy, roo, sts) <- rs
+                        $forall ((name, repr, tm, dy, _, sts), Just (Room roo mx_seats)) <- rsr
                             <tr>
                                 <td>#{name}</td>
                                 <td>#{repr}</td>
                                 <td>#{tm}</td>
                                 <td>#{dy}</td>
-                                <td>#{show $ fromSqlKey  roo}</td>
+                                <td>#{roo}</td>
                                 <td>#{show sts}</td>
-                               
+                                <td>#{show mx_seats}</td>
                 
     |]
 
