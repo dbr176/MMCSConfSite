@@ -53,7 +53,7 @@ getAdminR = do
                 <form method=post action=@{AdminR} enctype=#{enctype}>
                     ^{widget}
                     <button>Отправить
-                <table>
+                <table  border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
                     <thead>
                         <tr>
                         <th>Аудитория</th>
@@ -63,7 +63,8 @@ getAdminR = do
                             <tr>
                                 <td>#{idn}</td>
                                 <td>#{show sts}</td>
-                <table>
+                <br>
+                <table border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
                     <thead>
                         <tr>
                         <th>Название</th>
