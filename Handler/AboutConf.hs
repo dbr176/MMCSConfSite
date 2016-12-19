@@ -17,11 +17,15 @@ getAboutConfR = do  defaultLayout [whamlet|<div .container>
                                         <div .page-header>
                                             <h1 #start>
                                             <p>
-
-                                           <h2  >Описание:</h2>
-                                            .....
+                                            
+                                            <h2  >Описание:</h2>
+                                            Для участинков конференции предоставляются общежития, вкусные блюда.
                                             <h2  >Время проведения:</h2>
-                                            ...
+                                            когда-то
+                                            <h2>Для участия в партнерстве:</h2>
+                                            <div class="input-group js-zeroclipboard-container" >
+                                            <input type="text" class="form-control input-sm text-small text-gray input-monospace js-url-field js-zeroclipboard-target"   value="email://tolik.abramoff@yandex.ru" readonly="readonly">
+       
                                             <h2>Карта проезда:</h2>
                                             <iframe src="https://api-maps.yandex.ru/frame/v1/-/CZH8b6Ny" width="560" height="400" frameborder="0"></iframe>
                                             <h2>Фотографии:</h2>

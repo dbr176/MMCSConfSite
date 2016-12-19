@@ -18,17 +18,16 @@ getContactsR = do  defaultLayout [whamlet|<div .container>
                                             <h1 #start>
                                             <p>
 
-                                           <h2  >Место провдения:</h2>
+                                            <h2>Место провдения:</h2>
                                             344090, Россия, Ростовская область, г. Ростов-на-Дону, ул. Мильчакова 8а
-                                            <h2  >Телефон:</h2>
+                                            <h2>Телефон:</h2>
                                             +7 (863) 2975 111
                                              <h2  >Факс:</h2>
                                             +7 (863) 2975 113
-                                            <h2  >Деканат:</h2>
+                                            <h2>Деканат:</h2>
                                             кабинет 111
                                             <h2>Место на карте:</h2>
-                                            <iframe src="https://api-maps.yandex.ru/frame/v1/-/CZH8b6Ny" width="660" height="500" frameborder="0"></iframe>
-                                                
+                                            <iframe src="https://api-maps.yandex.ru/frame/v1/-/CZH8b6Ny" width="660" height="500" frameborder="0"></iframe>      
                                     |]
 
     
