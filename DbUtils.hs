@@ -116,9 +116,10 @@ isApprovedKey k = do
         _ -> return True
 
 isApproved title = do
-    -- TODO: обработка ситуации, когда не найден доклад
-    Just (Entity k _) <- reportByTitle title
-    isApprovedKey k
+    r <- reportByTitle title
+    case r of
+            Nothing -> return False
+            Just (Entity k _) -> isApprovedKey k
 
 approve title = do
     Just (Entity kr (Report _ _ _ _ r _)) <- reportByTitle title 
