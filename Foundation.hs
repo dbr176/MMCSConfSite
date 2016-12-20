@@ -115,7 +115,12 @@ instance Yesod App where
                     { menuItemLabel = "Контакты"
                     , menuItemRoute = ContactsR
                     , menuItemAccessCallback = True
-                    }    
+                    }   
+                , NavbarLeft $ MenuItem
+                    { menuItemLabel = "Регистрация"
+                    , menuItemRoute = RegistrationR
+                    , menuItemAccessCallback = True
+                    }   
                 , NavbarLeft $ MenuItem
                     { menuItemLabel = "Profile"
                     , menuItemRoute = ProfileR
@@ -165,6 +170,7 @@ instance Yesod App where
     isAuthorized AboutConfR _ = return Authorized
     isAuthorized ContactsR _ = return Authorized
     isAuthorized (ApproveR _) _ = return Authorized
+    isAuthorized RegistrationR _ = return Authorized
 
     isAuthorized ProfileR _ = isAuthenticated
 
@@ -206,8 +212,9 @@ instance YesodBreadcrumbs App where
   breadcrumb  AdminR = return ("Администратор", Just HomeR)
   breadcrumb  AboutConfR = return ("О конференции", Just HomeR)
   breadcrumb  ContactsR = return ("Контакты", Just HomeR)
+  breadcrumb  RegistrationR = return ("Регистрация", Just HomeR)
   breadcrumb  _ = return ("home2", Nothing)
-
+  
 -- How to run database actions.
 instance YesodPersist App where
     type YesodPersistBackend App = SqlBackend
