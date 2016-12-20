@@ -100,7 +100,7 @@ instance Yesod App where
                     { menuItemLabel = "Администратор"
                     , menuItemRoute = AdminR
                     , menuItemAccessCallback = True
-                    }    
+                    }
                 , NavbarLeft $ MenuItem
                     { menuItemLabel = "Программа"
                     , menuItemRoute = ProgramR
@@ -115,12 +115,12 @@ instance Yesod App where
                     { menuItemLabel = "Контакты"
                     , menuItemRoute = ContactsR
                     , menuItemAccessCallback = True
-                    }   
+                    }
                 , NavbarLeft $ MenuItem
                     { menuItemLabel = "Регистрация"
                     , menuItemRoute = RegistrationR
                     , menuItemAccessCallback = True
-                    }   
+                    }
                 , NavbarLeft $ MenuItem
                     { menuItemLabel = "Profile"
                     , menuItemRoute = ProfileR
@@ -213,8 +213,8 @@ instance YesodBreadcrumbs App where
   breadcrumb  AboutConfR = return ("О конференции", Just HomeR)
   breadcrumb  ContactsR = return ("Контакты", Just HomeR)
   breadcrumb  RegistrationR = return ("Регистрация", Just HomeR)
-  breadcrumb  _ = return ("home2", Nothing)
-  
+  breadcrumb  _ = return ("Главная", Nothing)
+
 -- How to run database actions.
 instance YesodPersist App where
     type YesodPersistBackend App = SqlBackend
