@@ -41,7 +41,7 @@ getAdminR = do
     (widget, enctype) <- generateFormPost roomsForm
     rooms <- (runDB $ getRooms)
     reports <- (runDB $ getNotApprovedReports)
-    let rs =  fmap (\(Entity _ x) -> (roomRoomident x, roomMaxseats x)) rooms
+    let rs = dropEntityList rooms
     
     defaultLayout
         [whamlet|
@@ -60,7 +60,7 @@ getAdminR = do
                         <th bgcolor="#FFFF00">Аудитория</th>
                         <th bgcolor="#FFFF00">Всего мест</th>
                     <tbody>
-                        $forall (idn, sts) <- rs
+                        $forall (Room idn sts) <- rs
                             <tr>
                                 <td>#{idn}</td>
                                 <td>#{show sts}</td>
@@ -73,7 +73,7 @@ getAdminR = do
                         <th bgcolor="#FFFF00">Докладчик</th>
                         <th bgcolor="#FFFF00">Ожидающие подтверждения</th>
                     <tbody>
-                        $forall (Entity _ (Report title reporter _ _ _ _)) <- reports
+                        $forall (Report title reporter _ _ _ _) <- dropEntityList reports
                              <tr>
                                 <td>#{title}</td>
                                 <td>#{reporter}</td>
