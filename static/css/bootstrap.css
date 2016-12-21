@@ -7020,3 +7020,16 @@ a.list-group-item-danger.active:focus {
 .popover {
   color: #2c3e50;
 }
+
+.boxed:link, .boxed:visited {
+    background-color: #f44336;
+    color: white;
+    padding: 14px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.boxed:hover, .boxed:active {
+    background-color: red;
+}
