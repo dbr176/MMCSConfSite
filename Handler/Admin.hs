@@ -199,8 +199,8 @@ addReportsFromFile path = do
             ApproveRequest title time day room -> do
                 -- Найти комнату
                 reports <- selectList [ReportTitle ==. title] []
-                deleteWhere [ReportRequestTitle ==. title]
                 (Just (Entity _ (ReportRequest _ rep _))) <- selectFirst [ReportRequestTitle ==. title] []
+                deleteWhere [ReportRequestTitle ==. title]
                 approve title
                 (addNewReport title ""  rep time day room 0) >> return ()
             ReportParsingError -> return ()
