@@ -19,25 +19,6 @@ data RegInform = RegInform {
     about :: Text
 } deriving(Show)
 
--- TODO: Вставить данные в новую форму
--- <div>
---     <label for="form_sname">Фамилия</label>
---     <input type="Фамилия" id="form_sname" name="second_name"/>
--- <div>
---     <label for="form_fname">Имя</label>
---     <input type="Имя" id="form_fname" name="first_fname"/>
--- <div>
---     <label for="form_tname">Отчество</label>
---     <input type="Отчество" id="form_tname" name="third_name"/>
--- <div>
---     <label for="form_titrep">Название доклада</label>
---     <input type="Название доклада" id="form_titrep" name="title_report"/>
--- <div>
---     <label for="form_about_you">О себе</label>
---     <textarea type="О себе" id="form_about_you" name="about_you"/>
--- <div>
---   <a .btn.btn-info.btn-lg>
---      Подать заявку
 getRegistrationR :: Handler Html
 getRegistrationR = do defaultLayout [whamlet|<div .container><form action=@{RegistrationR}>
         <div class="form"><form id="contactform">
