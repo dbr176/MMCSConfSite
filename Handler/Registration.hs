@@ -10,6 +10,14 @@ import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Database.Persist.Sql
 import Database.Persist
 
+data RegInform = RegInform {
+	firstName :: Text,
+	secondName :: Text,
+	thirdName :: Text,
+	report :: Text
+}
+
+
 getRegistrationR :: Handler Html
 getRegistrationR = do 
 	defaultLayout 
