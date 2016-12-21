@@ -19,10 +19,10 @@ data RegInform = RegInform {
 } deriving(Show)
 
 getRegistrationR :: Handler Html
-getRegistrationR = do defaultLayout [whamlet| <form action=@{RegistrationR}><div .container>
+getRegistrationR = do defaultLayout [whamlet|<div .container><form action=@{RegistrationR}>
         <h1> Регистрация </h1>
         <h4>
-           <div>
+            <div>
                 <label for="form_sname">Фамилия</label>
                 <input type="Фамилия" id="form_sname" name="second_name"/>
             <div>
@@ -37,7 +37,7 @@ getRegistrationR = do defaultLayout [whamlet| <form action=@{RegistrationR}><div
             <div>
                 <label for="form_about_you">О себе</label>
                 <textarea type="О себе" id="form_about_you" name="about_you"/>
-           <div>
+            <div>
               <a .btn.btn-info.btn-lg>
                  Подать заявку
     |]
