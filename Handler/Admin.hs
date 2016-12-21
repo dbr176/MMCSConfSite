@@ -51,7 +51,9 @@ getAdminR = do
     (appWidget, appEnctype) <- generateFormPost approveRequestForm
     rooms <- (runDB $ getRooms)
     reports <- (runDB $ getNotApprovedReports)
+    requests <- (runDB $ getRequests)
     let rs = dropEntityList rooms
+    let rq = dropEntityList requests
     defaultLayout [whamlet|<div .container><center>
         <p>
             Загрузка файла:
@@ -61,10 +63,7 @@ getAdminR = do
             ^{widget}
             <button>Отправить
             <p>
-        <form method=post action=@{ApproveFR} enctype=#{appEnctype}>
-            ^{appWidget}
-            <button>Отправить
-            <p>
+        <h2> Аудитории
         <table  border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
             <thead>
                 <tr>
@@ -77,12 +76,31 @@ getAdminR = do
                         <td>#{show sts}</td>
         <br>
         <p>
+        <h2> Запросы
         <table border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
             <thead>
                 <tr>
                 <th bgcolor="#FFFF00">Название</th>
                 <th bgcolor="#FFFF00">Докладчик</th>
-                <th bgcolor="#FFFF00">Ожидающие подтверждения</th>
+            <tbody>
+                $forall (ReportRequest title reporter _) <- dropEntityList requests
+                     <tr>
+                        <td>#{title}</td>
+                        <td>#{reporter}</td>
+        <p>
+        <form method=post action=@{ApproveFR} enctype=#{appEnctype}>
+            ^{appWidget}
+            <button>Отправить
+            <p>
+        <br>
+        <p>
+        <h2> Не подтверждённые доклады
+        <table border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
+            <thead>
+                <tr>
+                <th bgcolor="#FFFF00">Название</th>
+                <th bgcolor="#FFFF00">Докладчик</th>
+                <th bgcolor="#FFFF00"></th>
             <tbody>
                 $forall (Report title reporter _ _ _ _) <- dropEntityList reports
                      <tr>

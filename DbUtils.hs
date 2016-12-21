@@ -64,6 +64,10 @@ checkRequestCode = (== okMsg)
 addReportRequest title info reporter =
     insert $ ReportRequest title reporter info
 
+getRequests = do
+    r <- selectList [] []
+    return $ (r :: [Entity ReportRequest])
+
 getUsers :: forall (m :: * -> *).
              MonadIO m =>
              ReaderT SqlBackend m [Entity User]
