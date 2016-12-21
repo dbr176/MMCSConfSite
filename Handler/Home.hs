@@ -6,7 +6,7 @@ import Text.Julius (RawJS (..))
 
 -- Обработчик GET запроса
 getHomeR :: Handler Html
-getHomeR = do   defaultLayout [whamlet|
+getHomeR = do defaultLayout [whamlet|
         <center>
             <script src="//yastatic.net/es5-shims/0.0.2/es5-shims.min.js"></script>
             <script src="//yastatic.net/share2/share.js"></script>
