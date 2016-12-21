@@ -40,15 +40,17 @@ getRegistrationR = do defaultLayout [whamlet|<div .container><form action=@{Regi
             <input class="buttom" name="submit" id="submit" tabindex="5" value="Зарегистрироваться" type="submit">
     |]
 
-getInputR = do
-    inf <- runInputGet $ RegInform
-                <$> ireq textField "first_name"
-                <*> ireq textField "second_name"
-                <*> ireq textField "third_name"
-                <*> ireq textField "title_report"
-                <*> ireq textField "about_you"
-    addReportRequest (report $ inf) 
-    	(secondName inf ++ firstName inf ++ thirdName inf) (about $ inf)
+    --addReportRequest (report $ inf) 
+    	--(secondName inf ++ firstName inf ++ thirdName inf) (about $ inf)
 
 postRegistrationR :: Handler Html
 postRegistrationR = undefined
+
+getInputR :: Form RegInform
+getInputR = do
+    renderBootstrap3 BootstrapBasicForm $ RegInform
+                <$> areq textField "first_name" Nothing
+                <*> areq textField "second_name" Nothing
+                <*> areq textField "third_name" Nothing
+                <*> areq textField "title_report" Nothing
+                <*> areq textField "about_you" Nothing
