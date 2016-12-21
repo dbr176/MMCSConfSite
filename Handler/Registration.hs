@@ -45,8 +45,8 @@ postRegistrationR = do
 			let	aboutYou   = about inf
 			let apartment  = apartments inf
 			let picture    = photo inf
+			runDB $ (addReportRequest title reporter undefined)
 			defaultLayout [whamlet|<p>Подтверждено. <a href="/admin">Вернуться|]
-			undefined
 		_ -> do
 			defaultLayout [whamlet|<p>Произошла ошибка при регистрации. <a href="/registration">Вернуться|]
 
