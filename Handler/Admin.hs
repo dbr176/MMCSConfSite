@@ -37,61 +37,57 @@ uploadDirectory :: FilePath
 uploadDirectory = "static"
 
 getAdminR :: Handler Html
-getAdminR = do 
+getAdminR = do
     (widget, enctype) <- generateFormPost roomsForm
     rooms <- (runDB $ getRooms)
     reports <- (runDB $ getNotApprovedReports)
     let rs = dropEntityList rooms
-    
-    defaultLayout
-        [whamlet|
-            <center>
-                <p>
-                    Загрузка файла:
-                <p> rooms.txt - файл аудиторий
-                <p> reports.txt - файл докладов
-                <form method=post action=@{AdminR} enctype=#{enctype}>
-                    ^{widget}
-                    <button>Отправить
-                    <p>
-                <table  border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
-                    <thead>
-                        <tr>
-                        <th bgcolor="#FFFF00">Аудитория</th>
-                        <th bgcolor="#FFFF00">Всего мест</th>
-                    <tbody>
-                        $forall (Room idn sts) <- rs
-                            <tr>
-                                <td>#{idn}</td>
-                                <td>#{show sts}</td>
-                <br>
-                <p> 
-                <table border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
-                    <thead>
-                        <tr>
-                        <th bgcolor="#FFFF00">Название</th>
-                        <th bgcolor="#FFFF00">Докладчик</th>
-                        <th bgcolor="#FFFF00">Ожидающие подтверждения</th>
-                    <tbody>
-                        $forall (Report title reporter _ _ _ _) <- dropEntityList reports
-                             <tr>
-                                <td>#{title}</td>
-                                <td>#{reporter}</td>
-                                <td><a href="/approve/#{title}">Подтвердить 
-                        
-        |]
+    defaultLayout [whamlet|<div .container><center>
+        <p>
+            Загрузка файла:
+        <p> rooms.txt - файл аудиторий
+        <p> reports.txt - файл докладов
+        <form method=post action=@{AdminR} enctype=#{enctype}>
+            ^{widget}
+            <button>Отправить
+            <p>
+        <table  border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
+            <thead>
+                <tr>
+                <th bgcolor="#FFFF00">Аудитория</th>
+                <th bgcolor="#FFFF00">Всего мест</th>
+            <tbody>
+                $forall (Room idn sts) <- rs
+                    <tr>
+                        <td>#{idn}</td>
+                        <td>#{show sts}</td>
+        <br>
+        <p>
+        <table border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
+            <thead>
+                <tr>
+                <th bgcolor="#FFFF00">Название</th>
+                <th bgcolor="#FFFF00">Докладчик</th>
+                <th bgcolor="#FFFF00">Ожидающие подтверждения</th>
+            <tbody>
+                $forall (Report title reporter _ _ _ _) <- dropEntityList reports
+                     <tr>
+                        <td>#{title}</td>
+                        <td>#{reporter}</td>
+                        <td><a href="/approve/#{title}">Подтвердить
+    |]
 
 postAdminR :: Handler Html
-postAdminR = do 
+postAdminR = do
     ((result, widget), enctype) <- runFormPost roomsForm
     case result of
         FormSuccess file -> do
             fl <- writeToServer $ fileInfo file
             case fl of
-                RoomsFile path -> 
+                RoomsFile path ->
                     runDB (addRoomsFromFile path) >>
                     defaultLayout [whamlet|<p>Аудитории загружены. <a href="/admin">Вернуться|]
-                ReportsFile path -> 
+                ReportsFile path ->
                     runDB (addReportsFromFile path) >>
                     defaultLayout [whamlet|<p>Отчёты загружены. <a href="/admin">Вернуться |]
                 _ -> defaultLayout [whamlet|<p>Неизвестный файл. <a href="/admin">Вернуться|]
@@ -115,7 +111,7 @@ parseRoom _ = RoomParsingError
 
 addRoomsFromFile path = do
     content <- liftIO $ SIO.readFile $ filePath path
-    let rooms =  map (parseRoom . (splitOn ";")) $ lines content 
+    let rooms =  map (parseRoom . (splitOn ";")) $ lines content
     forM_ rooms $ \room ->
         case room of
             RemoveRoom idnt -> (removeRoom idnt) >> return ()
@@ -141,8 +137,8 @@ addReportsFromFile path = do
 
 
 parseReport :: [String] -> ReportFileCommand
-parseReport ["a", title, reporter, time, day, roomid] = 
-    AddReport (fromString title) (fromString reporter) 
+parseReport ["a", title, reporter, time, day, roomid] =
+    AddReport (fromString title) (fromString reporter)
               (fromString time) (fromString day) (fromString roomid)
 parseReport _ = ReportParsingError
 
@@ -163,5 +159,5 @@ filePath f = uploadDirectory </> f
 
 roomsForm :: Form LoadRoomsForm
 roomsForm = do
-    renderBootstrap3 BootstrapBasicForm $ LoadRoomsForm 
+    renderBootstrap3 BootstrapBasicForm $ LoadRoomsForm
                                        <$> fileAFormReq "Выберите файл"
