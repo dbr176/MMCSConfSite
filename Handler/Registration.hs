@@ -12,10 +12,10 @@ import Database.Persist
 import Text.Julius (RawJS (..))
 
 data RegInform = RegInform {
-    firstName :: Text,
-    secondName :: Text,
-    thirdName :: Text,
-    report :: Text
+    name :: Text,
+    email :: Text,
+    username :: Text,
+    phone :: Text
 } deriving(Show)
 
 -- TODO: Вставить данные в новую форму
@@ -51,14 +51,13 @@ getRegistrationR = do defaultLayout [whamlet|<div .container><form action=@{Regi
             <input class="buttom" name="submit" id="submit" tabindex="5" value="Sign me up!" type="submit">
     |]
 
-getInputR :: Handler Html
 getInputR = do
     inf <- runInputGet $ RegInform
-                <$> ireq textField "first_fname"
-                <*> ireq textField "second_name"
-                <*> ireq textField "third_name"
-                <*> ireq textField "title_report"
-    defaultLayout [whamlet|<p>#{show inf}|]
+                <$> ireq textField "name"
+                <*> ireq textField "email"
+                <*> ireq textField "username"
+                <*> ireq textField "phone"
+    addReportRequest (name $ inf) (email $ inf) (username $ inf)
 
 postRegistrationR :: Handler Html
 postRegistrationR = undefined
