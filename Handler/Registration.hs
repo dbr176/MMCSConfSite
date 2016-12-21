@@ -17,8 +17,9 @@ data RegInform = RegInform {
     thirdName  :: Text,
     report     :: Text,
     about      :: Textarea,
-    check      :: Bool
-} deriving(Show)
+    check      :: Bool,
+    photo      :: FileInfo
+}
 
 getRegistrationR :: Handler Html
 getRegistrationR = do
@@ -56,3 +57,4 @@ inputRegInform = do
                 <*> areq textField "Название доклада" Nothing
                 <*> areq textareaField "О себе" Nothing
                 <*> areq checkBoxField "Необходимость в предоставлении жилья" Nothing
+                <*> areq fileField "Загрузить фотографию" Nothing
