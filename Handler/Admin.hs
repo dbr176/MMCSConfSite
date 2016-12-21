@@ -22,7 +22,7 @@ data ApproveRequestFF = ApproveRequestFF {
       arTitle :: Text,
       arTime :: Text,
       arDay :: Text,
-      arRoom ::  Text 
+      arRoom ::  Text
 }
 
 data LoadRoomsForm = LoadRoomsForm {
@@ -31,7 +31,7 @@ data LoadRoomsForm = LoadRoomsForm {
 
 data ReportFileCommand =
       RemoveReport Text
-    | ApproveRequest Text Text Text Text 
+    | ApproveRequest Text Text Text Text
     | ApproveReport Text
     | AddReport Text Text Text Text Text
     | ReportParsingError
@@ -55,14 +55,15 @@ getAdminR = do
     let rs = dropEntityList rooms
     let rq = dropEntityList requests
     defaultLayout [whamlet|<div .container><center>
-        <p>
-            Загрузка файла:
-        <p> rooms.txt - файл аудиторий
-        <p> reports.txt - файл докладов
-        <form method=post action=@{AdminR} enctype=#{enctype}>
-            ^{widget}
-            <button>Отправить
+        <div class="form"><form id="contactform">
             <p>
+                Загрузка файла:
+            <p> rooms.txt - файл аудиторий
+            <p> reports.txt - файл докладов
+            <form method=post action=@{AdminR} enctype=#{enctype}>
+                ^{widget}
+                <input class="buttom" name="submit" id="submit" tabindex="5" value="Отправить" type="submit">
+
         <h2> Аудитории
         <table  border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
             <thead>
@@ -74,8 +75,7 @@ getAdminR = do
                     <tr>
                         <td>#{idn}</td>
                         <td>#{show sts}</td>
-        <br>
-        <p>
+
         <h2> Запросы
         <table border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
             <thead>
@@ -87,13 +87,12 @@ getAdminR = do
                      <tr>
                         <td>#{title}</td>
                         <td>#{reporter}</td>
-        <p>
-        <form method=post action=@{ApproveFR} enctype=#{appEnctype}>
-            ^{appWidget}
-            <button>Отправить
-            <p>
-        <br>
-        <p>
+
+        <div class="form"><form id="contactform">
+            <form method=post action=@{ApproveFR} enctype=#{appEnctype}>
+                ^{appWidget}
+                <input class="buttom" name="submit" id="submit" tabindex="5" value="Отправить" type="submit">
+
         <h2> Не подтверждённые доклады
         <table border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
             <thead>
@@ -126,9 +125,10 @@ postAdminR = do
         _ -> defaultLayout
             [whamlet|
                 <p>Ошибка, попробуйте снова.
-                <form method=post action=@{AdminR} enctype=#{enctype}>
-                    ^{widget}
-                    <button>Отправить
+                <div class="form"><form id="contactform">
+                    <form method=post action=@{AdminR} enctype=#{enctype}>
+                        ^{widget}
+                        <input class="buttom" name="submit" id="submit" tabindex="5" value="Отправить" type="submit">
             |]
 
 appr title time day room = do
@@ -149,12 +149,12 @@ postApproveFR = do
                 day   = arDay appr
                 room  = arRoom appr
             --_ <- runDB $ appr title time day room
-            reports <- runDB $ selectList [ReportTitle ==. title] [] 
+            reports <- runDB $ selectList [ReportTitle ==. title] []
             runDB $ deleteWhere [ReportRequestTitle ==. title]
             (Just (Entity _ (ReportRequest _ rep _))) <- runDB $ selectFirst [ReportRequestTitle ==. title] []
             runDB $ (addNewReport title ""  rep time day room 0)
             defaultLayout [whamlet|<p>Подтверждено. <a href="/admin">Вернуться|]
-        _ -> do 
+        _ -> do
             defaultLayout [whamlet|<p>Не подтверждено. <a href="/admin">Вернуться|]
 
 getApproveFR = getAdminR
@@ -194,7 +194,7 @@ addReportsFromFile path = do
                 reports <- selectList [ReportTitle ==. title] []
                 (addNewReport title "" reptr time day rid 0) >> return ()
             ApproveReport title -> approve title >> return ()
-            ApproveRequest title time day room -> do 
+            ApproveRequest title time day room -> do
                 -- Найти комнату
                 reports <- selectList [ReportTitle ==. title] []
                 deleteWhere [ReportRequestTitle ==. title]
