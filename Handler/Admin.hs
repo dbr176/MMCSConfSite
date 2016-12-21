@@ -18,6 +18,13 @@ data LoadFileType =
     | ReportsFile FilePath
     | UnknownFile
 
+data ApproveRequestFF = ApproveRequestFF {
+      arTitle :: Text,
+      arTime :: Text,
+      arDay :: Text,
+      arRoom ::  Text 
+}
+
 data LoadRoomsForm = LoadRoomsForm {
     fileInfo :: FileInfo
 }
@@ -41,6 +48,7 @@ uploadDirectory = "static"
 getAdminR :: Handler Html
 getAdminR = do
     (widget, enctype) <- generateFormPost roomsForm
+    (appWidget, appEnctype) <- generateFormPost approveRequestForm
     rooms <- (runDB $ getRooms)
     reports <- (runDB $ getNotApprovedReports)
     let rs = dropEntityList rooms
@@ -51,6 +59,10 @@ getAdminR = do
         <p> reports.txt - файл докладов
         <form method=post action=@{AdminR} enctype=#{enctype}>
             ^{widget}
+            <button>Отправить
+            <p>
+        <form method=post action=@{ApproveFR} enctype=#{enctype}>
+            ^{appWidget}
             <button>Отправить
             <p>
         <table  border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
@@ -101,6 +113,27 @@ postAdminR = do
                     <button>Отправить
             |]
 
+appr title time day room = do
+    reports <- selectList [ReportTitle ==. title] []
+    deleteWhere [ReportRequestTitle ==. title]
+    (Just (Entity _ (ReportRequest _ rep _))) <- selectFirst [ReportRequestTitle ==. title] []
+    _ <- approve title
+    -- Найти комнату
+    (addNewReport title ""  rep time day room 0) >> return ()
+
+postApproveFR :: Handler Html
+postApproveFR = do
+    ((result, widget), enctype) <- runFormPost approveRequestForm
+    case result of
+        FormSuccess appr -> do
+            let title = arTitle appr
+                time  = arTime appr
+                day   = arDay appr
+                room  = arRoom appr
+            -- _ <- runDB $ appr title time day room 
+            defaultLayout [whamlet|<p>Подтверждено. <a href="/admin">Вернуться|]
+        _ -> defaultLayout [whamlet|<p>Не подтверждено. <a href="/admin">Вернуться|]
+
 getApproveR :: Text -> Handler Html
 getApproveR title = do
     _ <- runDB $ approve title
@@ -137,9 +170,11 @@ addReportsFromFile path = do
                 (addNewReport title "" reptr time day rid 0) >> return ()
             ApproveReport title -> approve title >> return ()
             ApproveRequest title time day room -> do 
+                -- Найти комнату
                 reports <- selectList [ReportTitle ==. title] []
                 deleteWhere [ReportRequestTitle ==. title]
                 (Just (Entity _ (ReportRequest _ rep _))) <- selectFirst [ReportRequestTitle ==. title] []
+                approve title
                 (addNewReport title ""  rep time day room 0) >> return ()
             ReportParsingError -> return ()
 
@@ -172,3 +207,12 @@ roomsForm :: Form LoadRoomsForm
 roomsForm = do
     renderBootstrap3 BootstrapBasicForm $ LoadRoomsForm
                                        <$> fileAFormReq "Выберите файл"
+
+approveRequestForm :: Form ApproveRequestFF
+approveRequestForm = do
+    renderBootstrap3 BootstrapBasicForm $ ApproveRequestFF
+                                       <$> areq textField "Название" Nothing
+                                       <*> areq textField "Время" (Just "")
+                                       <*> areq textField "День" (Just "")
+                                       <*> areq textField "Аудитория" Nothing
+

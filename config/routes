@@ -12,6 +12,8 @@
 
 /approve/#Text ApproveR GET
 
+/appf ApproveFR POST
+
 /program ProgramR GET POST
 
 /contacts ContactsR GET
