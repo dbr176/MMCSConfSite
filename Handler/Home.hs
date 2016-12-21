@@ -4,6 +4,7 @@ import Import
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Text.Julius (RawJS (..))
 
+-- Обработчик GET запроса
 getHomeR :: Handler Html
 getHomeR = do   defaultLayout [whamlet|
         <center>
