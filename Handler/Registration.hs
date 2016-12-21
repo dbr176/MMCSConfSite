@@ -28,12 +28,9 @@ getRegistrationR = do
 	defaultLayout [whamlet|<div .container>
         <div class="form"><form id="contactform">
             <form method=post action=@{RegistrationR} enctype=#{appEnctype}>
-            ^{appWidget}
-            <input class="buttom" name="submit" id="submit" tabindex="5" value="Зарегистрироваться" type="submit">
+                ^{appWidget}
+                <input class="buttom" name="submit" id="submit" tabindex="5" value="Зарегистрироваться" type="submit">
     |]
-
-    --addReportRequest (report $ inf)
-    	--(secondName inf ++ firstName inf ++ thirdName inf) (about $ inf)
 
 postRegistrationR :: Handler Html
 postRegistrationR = do
@@ -46,7 +43,7 @@ postRegistrationR = do
 			let apartment  = apartments inf
 			let picture    = photo inf
 			runDB $ (addReportRequest title reporter undefined)
-			defaultLayout [whamlet|<p>Подтверждено. <a href="/admin">Вернуться|]
+			defaultLayout [whamlet|<p>Подтверждено. <a href="/registration">Вернуться|]
 		_ -> do
 			defaultLayout [whamlet|<p>Произошла ошибка при регистрации. <a href="/registration">Вернуться|]
 
