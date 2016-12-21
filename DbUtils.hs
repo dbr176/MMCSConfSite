@@ -61,6 +61,8 @@ okMsg           = "OK"
 checkRequestCode :: forall a. (Eq a, IsString a) => a -> Bool
 checkRequestCode = (== okMsg)
 
+addReportRequest title info reporter =
+    insert $ ReportRequest title reporter info
 
 getUsers :: forall (m :: * -> *).
              MonadIO m =>

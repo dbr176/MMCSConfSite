@@ -17,6 +17,11 @@ Room
     roomident Text
     maxseats Int
     UniqueRoom roomident
+ReportRequest
+    title Text
+    reporter Text
+    info Text
+    UniqueReportRequest title
 Report
     title Text
     reporter Text
