@@ -12,7 +12,7 @@
 
 /approve/#Text ApproveR GET
 
-/appf ApproveFR POST
+/appf ApproveFR GET POST
 
 /program ProgramR GET POST
 

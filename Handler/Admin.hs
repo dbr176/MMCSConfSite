@@ -61,7 +61,7 @@ getAdminR = do
             ^{widget}
             <button>Отправить
             <p>
-        <form method=post action=@{ApproveFR} enctype=#{enctype}>
+        <form method=post action=@{ApproveFR} enctype=#{appEnctype}>
             ^{appWidget}
             <button>Отправить
             <p>
@@ -133,6 +133,9 @@ postApproveFR = do
             -- _ <- runDB $ appr title time day room 
             defaultLayout [whamlet|<p>Подтверждено. <a href="/admin">Вернуться|]
         _ -> defaultLayout [whamlet|<p>Не подтверждено. <a href="/admin">Вернуться|]
+
+getApproveFR = getAdminR
+
 
 getApproveR :: Text -> Handler Html
 getApproveR title = do

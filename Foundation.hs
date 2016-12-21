@@ -171,6 +171,7 @@ instance Yesod App where
     isAuthorized ContactsR _ = return Authorized
     isAuthorized (ApproveR _) _ = return Authorized
     isAuthorized RegistrationR _ = return Authorized
+    isAuthorized ApproveFR _ = return Authorized
 
     isAuthorized ProfileR _ = isAuthenticated
 
