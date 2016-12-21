@@ -19,7 +19,7 @@ data RegInform = RegInform {
 
 
 getRegistrationR :: Handler Html
-getRegistrationR = do defaultLayout [whamlet|
+getRegistrationR = do defaultLayout [whamlet|<div .container>
         <h1> Регистрация </h1>
         <h4>
            <div>
