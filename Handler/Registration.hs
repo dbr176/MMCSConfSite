@@ -43,6 +43,9 @@ getRegistrationR = do
                 <div> 
                     <label for="form_titrep">Название доклада</label>                
                     <input type="Название доклада" id="form_titrep" name="title_report"/>
+                <div> 
+                    <label for="form_about_you">О себе</label>                
+                    <textarea type="О себе" id="form_about_you" name="about_you"/>
                <div>
                   <a .btn.btn-info.btn-lg>
                      Подать заявку
@@ -51,8 +54,8 @@ getRegistrationR = do
 getInputR :: Handler Html
 getInputR = do
     inf <- runInputGet $ RegInform
-                <$> ireq textField "second_name"
-                <*> ireq textField "first_fname"
+                <$> ireq textField "first_fname"
+                <*> ireq textField "second_name"
                 <*> ireq textField "third_name"
                 <*> ireq textField "title_report"
     defaultLayout [whamlet|<p>#{show inf}|]
