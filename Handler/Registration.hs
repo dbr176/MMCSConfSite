@@ -40,14 +40,21 @@ data RegInform = RegInform {
 getRegistrationR :: Handler Html
 getRegistrationR = do defaultLayout [whamlet|<div .container><form action=@{RegistrationR}>
         <div class="form"><form id="contactform">
-            <p class="contact"><label for="name">Name</label></p>
-            <input id="name" name="name" placeholder="First and last name" required="" tabindex="1" type="text">
-            <p class="contact"><label for="email">Email</label></p>
-            <input id="email" name="email" placeholder="example@domain.com" required="" type="email">
-            <p class="contact"><label for="username">Create a username</label></p>
-            <input id="username" name="username" placeholder="username" required="" tabindex="2" type="text">
-            <p class="contact"><label for="phone">Mobile phone</label></p>
-            <input id="phone" name="phone" placeholder="phone number" required="" type="text"> <br>
+            <p class="contact"><label for="sname">Фамилия</label></p>
+            <input id="sname" name="second_name" placeholder="Введите фамилию" required="" tabindex="1" type="text">
+
+            <p class="contact"><label for="fname">Имя</label></p>
+            <input id="fname" name="first_name" placeholder="Введите имя" required="" tabindex="1" type="text">
+
+            <p class="contact"><label for="tname">Отчество</label></p>
+            <input id="tname" name="third_name" placeholder="Введите отчество" required="" type="email">
+
+            <p class="contact"><label for="username">Название доклада</label></p>
+            <input id="username" name="username" placeholder="Введите тему доклада" required="" tabindex="2" type="text">
+
+            <p class="contact"><label for="phone">О себе</label></p>
+            <textarea id="phone" name="phone" placeholder="Напишите о себе что-нибудь интересное" required="" type="text">
+
             <input class="buttom" name="submit" id="submit" tabindex="5" value="Sign me up!" type="submit">
     |]
 
