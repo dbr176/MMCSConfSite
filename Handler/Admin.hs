@@ -133,8 +133,8 @@ postAdminR = do
 
 appr title time day room = do
     reports <- selectList [ReportTitle ==. title] []
-    deleteWhere [ReportRequestTitle ==. title]
     (Just (Entity _ (ReportRequest _ rep _))) <- selectFirst [ReportRequestTitle ==. title] []
+    deleteWhere [ReportRequestTitle ==. title]
     _ <- approve title
     -- Найти комнату
     (addNewReport title ""  rep time day room 0)
@@ -150,8 +150,8 @@ postApproveFR = do
                 room  = arRoom appr
             --_ <- runDB $ appr title time day room
             reports <- runDB $ selectList [ReportTitle ==. title] [] 
-            runDB $ deleteWhere [ReportRequestTitle ==. title]
             (Just (Entity _ (ReportRequest _ rep _))) <- runDB $ selectFirst [ReportRequestTitle ==. title] []
+            runDB $ deleteWhere [ReportRequestTitle ==. title]
             runDB $ (addNewReport title ""  rep time day room 0)
             defaultLayout [whamlet|<p>Подтверждено. <a href="/admin">Вернуться|]
         _ -> do 
