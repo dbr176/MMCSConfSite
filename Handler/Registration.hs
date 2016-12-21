@@ -51,14 +51,13 @@ getRegistrationR = do defaultLayout [whamlet|<div .container><form action=@{Regi
             <input class="buttom" name="submit" id="submit" tabindex="5" value="Sign me up!" type="submit">
     |]
 
-getInputR :: Handler Html
 getInputR = do
     inf <- runInputGet $ RegInform
                 <$> ireq textField "name"
                 <*> ireq textField "email"
                 <*> ireq textField "username"
                 <*> ireq textField "phone"
-    defaultLayout [whamlet|<p>#{show inf}|]
+    addReportRequest (name $ inf) (email $ inf) (username $ inf)
 
 postRegistrationR :: Handler Html
 postRegistrationR = undefined
