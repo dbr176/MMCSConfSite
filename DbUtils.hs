@@ -75,6 +75,8 @@ getUsers = do
     usrs <- selectList [] []
     return $ (usrs :: [Entity User])
 
+addUserInfo ident accom = do return $ insert $ UserInfo ident accom
+addSponsor name ref = do return $ insert $ Sponsor name ref
 
 makeFullReport :: forall (m :: * -> *) a.
                    (IsString a, MonadIO m) =>
@@ -128,6 +130,8 @@ getSponsors :: forall (m :: * -> *).
 getSponsors = do
     l <- selectList [] []
     return $ (l :: [Entity Sponsor])
+
+reportsByReporter rep = selectList [ReportReporter ==. rep] []
 
 -- Добавляет полную информацию о докладе в БД
 addNewReport :: forall b (m :: * -> *).
