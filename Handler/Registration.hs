@@ -9,19 +9,20 @@ import Data.List.Split
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Database.Persist.Sql
 import Database.Persist
+import Text.Julius (RawJS (..))
 
 data RegInform = RegInform {
 	firstName :: Text,
 	secondName :: Text,
 	thirdName :: Text,
 	report :: Text
-}
-
+} deriving (Show)
 
 getRegistrationR :: Handler Html
 getRegistrationR = do 
 	defaultLayout 
 		[whamlet|
+        <form action=@{RegistrationR}>
         <div .container>
                             <div .bs-docs-section>
                                 <div .row>
@@ -47,5 +48,14 @@ getRegistrationR = do
                      Подать заявку
         |]
 
+getInputR :: Handler Html
+getInputR = do
+    inf <- runInputGet $ RegInform
+                <$> ireq textField "second_name"
+                <*> ireq textField "first_fname"
+                <*> ireq textField "third_name"
+                <*> ireq textField "title_report"
+    defaultLayout [whamlet|<p>#{show inf}|]
+
 postRegistrationR :: Handler Html 
-postRegistrationR = do defaultLayout [whamlet|<h1>Page of registration|]
+postRegistrationR = undefined
