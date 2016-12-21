@@ -12,44 +12,45 @@ import Database.Persist
 import Text.Julius (RawJS (..))
 
 data RegInform = RegInform {
-    firstName :: Text,
+    firstName  :: Text,
     secondName :: Text,
-    thirdName :: Text,
-    report :: Text,
-    about :: Text
+    thirdName  :: Text,
+    report     :: Text,
+    about      :: Text
 } deriving(Show)
 
 getRegistrationR :: Handler Html
-getRegistrationR = do defaultLayout [whamlet|<div .container><form action=@{RegistrationR}>
-        <div class="form"><form id="contactform">
-            <p class="contact"><label for="sname">Фамилия</label></p>
-            <input id="sname" name="second_name" placeholder="Введите фамилию" required="" tabindex="1" type="text">
+getRegistrationR = do 
+	(appWidget, appEnctype) <- generateFormPost inputRegInform
 
-            <p class="contact"><label for="fname">Имя</label></p>
-            <input id="fname" name="first_name" placeholder="Введите имя" required="" tabindex="2" type="text">
-
-            <p class="contact"><label for="tname">Отчество</label></p>
-            <input id="tname" name="third_name" placeholder="Введите отчество" required="" tabindex="3" type="text">
-
-            <p class="contact"><label for="treport">Название доклада</label></p>
-            <input id="treport" name="title_report" placeholder="Введите тему доклада" required="" tabindex="4" type="text">
-
-            <p class="contact"><label for="_about_you">О себе</label></p>
-            <textarea id="_about_you" name="about_you" placeholder="Напишите о себе что-нибудь интересное" tabindex="5" type="textarea">
-            <center><input class="buttom" name="submit" id="submit" tabindex="6" value="Зарегистрироваться" type="submit">
+	defaultLayout [whamlet|<div .container>
+        <div class="form"><form id="contactform">       
+            <form method=post action=@{RegistrationR} enctype=#{appEnctype}>
+            ^{appWidget}
+            <input class="buttom" name="submit" id="submit" tabindex="5" value="Зарегистрироваться" type="submit">       
     |]
 
-    --addReportRequest (report $ inf)
+    --addReportRequest (report $ inf) 
     	--(secondName inf ++ firstName inf ++ thirdName inf) (about $ inf)
 
 postRegistrationR :: Handler Html
-postRegistrationR = undefined
+postRegistrationR = do
+	((result, widget), enctype) <- runFormPost inputRegInform
+	case result of
+		FormSuccess inf -> do 
+			let reporter = secondName inf ++ firstName inf ++ thirdName inf
+			let	title    = report inf
+			let	aboutYou = about inf
+			defaultLayout [whamlet|<p>Подтверждено. <a href="/admin">Вернуться|]
+			undefined
+		_ -> do 
+			defaultLayout [whamlet|<p>Произошла ошибка при регистрации. <a href="/registration">Вернуться|]
 
-getInputR :: Form RegInform
-getInputR = do
+inputRegInform :: Form RegInform
+inputRegInform = do
     renderBootstrap3 BootstrapBasicForm $ RegInform
-                <$> areq textField "first_name" Nothing
-                <*> areq textField "second_name" Nothing
-                <*> areq textField "third_name" Nothing
-                <*> areq textField "title_report" Nothing
-                <*> areq textField "about_you" Nothing
+                <$> areq textField "Имя" Nothing
+                <*> areq textField "Фамилия" Nothing
+                <*> areq textField "Отчество" Nothing
+                <*> areq textField "Название доклада" Nothing
+                <*> areq textField "О себе" Nothing
