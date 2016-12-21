@@ -98,6 +98,19 @@ makeFullReport title = do
 
             return $ Right $ FullReport title reporter time day roomName seats info appr
 
+approveRequest title time day room = do
+    rm  <- selectFirst [RoomRoomident ==. room] []
+    req <- selectFirst [ReportRequestTitle ==. title] []
+    case rm of 
+        Nothing -> return roomNotExistMsg
+        Just (Entity _ (Room rid seats)) ->
+            case req of
+                Nothing -> return reportNotExist
+                Just (Entity _ (ReportRequest title reporter info)) -> do
+                    _ <- deleteWhere [ReportRequestTitle ==. title]
+                    return $ addNewReport title info reporter time day room 
+                    
+
 reportByTitle :: forall (m :: * -> *).
                  MonadIO m =>
                  Text -> ReaderT SqlBackend m (Maybe (Entity Report))

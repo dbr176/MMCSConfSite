@@ -24,6 +24,8 @@ data LoadRoomsForm = LoadRoomsForm {
 
 data ReportFileCommand =
       RemoveReport Text
+    | ApproveRequest Text Text Text Text 
+    | ApproveReport Text
     | AddReport Text Text Text Text Text
     | ReportParsingError
 
@@ -133,6 +135,12 @@ addReportsFromFile path = do
             AddReport title reptr time day rid -> do
                 reports <- selectList [ReportTitle ==. title] []
                 (addNewReport title "" reptr time day rid 0) >> return ()
+            ApproveReport title -> approve title >> return ()
+            ApproveRequest title time day room -> do 
+                reports <- selectList [ReportTitle ==. title] []
+                deleteWhere [ReportRequestTitle ==. title]
+                (Just (Entity _ (ReportRequest _ rep _))) <- selectFirst [ReportRequestTitle ==. title] []
+                (addNewReport title ""  rep time day room 0) >> return ()
             ReportParsingError -> return ()
 
 
@@ -140,6 +148,9 @@ parseReport :: [String] -> ReportFileCommand
 parseReport ["a", title, reporter, time, day, roomid] =
     AddReport (fromString title) (fromString reporter)
               (fromString time) (fromString day) (fromString roomid)
+parseReport ["p", title] = ApproveReport (fromString title)
+parseReport ["r", title] = RemoveReport (fromString title)
+parseReport ["f", title, t, day, room] = ApproveRequest (fromString title) (fromString t) (fromString day) (fromString room)
 parseReport _ = ReportParsingError
 
 chooseFileType filename
