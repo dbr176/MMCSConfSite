@@ -17,7 +17,7 @@ data RegInform = RegInform {
     thirdName  :: Text,
     report     :: Text,
     about      :: Textarea,
-    check      :: Bool,
+    apartments :: Bool,
     photo      :: FileInfo
 }
 
@@ -40,9 +40,11 @@ postRegistrationR = do
 	((result, widget), enctype) <- runFormPost inputRegInform
 	case result of
 		FormSuccess inf -> do
-			let reporter = secondName inf ++ firstName inf ++ thirdName inf
-			let	title    = report inf
-			let	aboutYou = about inf
+			let reporter   = secondName inf ++ firstName inf ++ thirdName inf
+			let	title      = report inf
+			let	aboutYou   = about inf
+			let apartment  = apartments inf
+			let picture    = photo inf
 			defaultLayout [whamlet|<p>Подтверждено. <a href="/admin">Вернуться|]
 			undefined
 		_ -> do
