@@ -26,21 +26,20 @@ getRegistrationR = do defaultLayout [whamlet|<div .container><form action=@{Regi
             <input id="sname" name="second_name" placeholder="Введите фамилию" required="" tabindex="1" type="text">
 
             <p class="contact"><label for="fname">Имя</label></p>
-            <input id="fname" name="first_name" placeholder="Введите имя" required="" tabindex="1" type="text">
+            <input id="fname" name="first_name" placeholder="Введите имя" required="" tabindex="2" type="text">
 
             <p class="contact"><label for="tname">Отчество</label></p>
-            <input id="tname" name="third_name" placeholder="Введите отчество" required="" type="text">
+            <input id="tname" name="third_name" placeholder="Введите отчество" required="" tabindex="3" type="text">
 
             <p class="contact"><label for="treport">Название доклада</label></p>
-            <input id="treport" name="title_report" placeholder="Введите тему доклада" required="" tabindex="2" type="text">
+            <input id="treport" name="title_report" placeholder="Введите тему доклада" required="" tabindex="4" type="text">
 
             <p class="contact"><label for="_about_you">О себе</label></p>
-            <textarea id="_about_you" name="about_you" placeholder="Напишите о себе что-нибудь интересное" required="" type="text">
-
-            <input class="buttom" name="submit" id="submit" tabindex="5" value="Зарегистрироваться" type="submit">
+            <textarea id="_about_you" name="about_you" placeholder="Напишите о себе что-нибудь интересное" tabindex="5" type="textarea">
+            <center><input class="buttom" name="submit" id="submit" tabindex="6" value="Зарегистрироваться" type="submit">
     |]
 
-    --addReportRequest (report $ inf) 
+    --addReportRequest (report $ inf)
     	--(secondName inf ++ firstName inf ++ thirdName inf) (about $ inf)
 
 postRegistrationR :: Handler Html
