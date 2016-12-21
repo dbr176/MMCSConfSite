@@ -16,34 +16,34 @@ data RegInform = RegInform {
     secondName :: Text,
     thirdName  :: Text,
     report     :: Text,
-    about      :: Text
+    about      :: Textarea
 } deriving(Show)
 
 getRegistrationR :: Handler Html
-getRegistrationR = do 
+getRegistrationR = do
 	(appWidget, appEnctype) <- generateFormPost inputRegInform
 
 	defaultLayout [whamlet|<div .container>
-        <div class="form"><form id="contactform">       
+        <div class="form"><form id="contactform">
             <form method=post action=@{RegistrationR} enctype=#{appEnctype}>
             ^{appWidget}
-            <input class="buttom" name="submit" id="submit" tabindex="5" value="Зарегистрироваться" type="submit">       
+            <input class="buttom" name="submit" id="submit" tabindex="5" value="Зарегистрироваться" type="submit">
     |]
 
-    --addReportRequest (report $ inf) 
+    --addReportRequest (report $ inf)
     	--(secondName inf ++ firstName inf ++ thirdName inf) (about $ inf)
 
 postRegistrationR :: Handler Html
 postRegistrationR = do
 	((result, widget), enctype) <- runFormPost inputRegInform
 	case result of
-		FormSuccess inf -> do 
+		FormSuccess inf -> do
 			let reporter = secondName inf ++ firstName inf ++ thirdName inf
 			let	title    = report inf
 			let	aboutYou = about inf
 			defaultLayout [whamlet|<p>Подтверждено. <a href="/admin">Вернуться|]
 			undefined
-		_ -> do 
+		_ -> do
 			defaultLayout [whamlet|<p>Произошла ошибка при регистрации. <a href="/registration">Вернуться|]
 
 inputRegInform :: Form RegInform
@@ -53,4 +53,4 @@ inputRegInform = do
                 <*> areq textField "Фамилия" Nothing
                 <*> areq textField "Отчество" Nothing
                 <*> areq textField "Название доклада" Nothing
-                <*> areq textField "О себе" Nothing
+                <*> areq textareaField "О себе" Nothing
