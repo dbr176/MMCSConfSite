@@ -29,7 +29,7 @@ getRegistrationR = do defaultLayout [whamlet|<div .container><form action=@{Regi
             <input id="fname" name="first_name" placeholder="Введите имя" required="" tabindex="1" type="text">
 
             <p class="contact"><label for="tname">Отчество</label></p>
-            <input id="tname" name="third_name" placeholder="Введите отчество" required="" type="email">
+            <input id="tname" name="third_name" placeholder="Введите отчество" required="" type="text">
 
             <p class="contact"><label for="treport">Название доклада</label></p>
             <input id="treport" name="title_report" placeholder="Введите тему доклада" required="" tabindex="2" type="text">
