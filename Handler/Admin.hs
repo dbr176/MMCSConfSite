@@ -137,7 +137,7 @@ appr title time day room = do
     (Just (Entity _ (ReportRequest _ rep _))) <- selectFirst [ReportRequestTitle ==. title] []
     _ <- approve title
     -- Найти комнату
-    (addNewReport title ""  rep time day room 0) >> return ()
+    (addNewReport title ""  rep time day room 0)
 
 postApproveFR :: Handler Html
 postApproveFR = do
@@ -148,12 +148,16 @@ postApproveFR = do
                 time  = arTime appr
                 day   = arDay appr
                 room  = arRoom appr
-            -- _ <- runDB $ appr title time day room 
+            --_ <- runDB $ appr title time day room
+            reports <- runDB $ selectList [ReportTitle ==. title] [] 
+            runDB $ deleteWhere [ReportRequestTitle ==. title]
+            (Just (Entity _ (ReportRequest _ rep _))) <- runDB $ selectFirst [ReportRequestTitle ==. title] []
+            runDB $ (addNewReport title ""  rep time day room 0)
             defaultLayout [whamlet|<p>Подтверждено. <a href="/admin">Вернуться|]
-        _ -> defaultLayout [whamlet|<p>Не подтверждено. <a href="/admin">Вернуться|]
+        _ -> do 
+            defaultLayout [whamlet|<p>Не подтверждено. <a href="/admin">Вернуться|]
 
 getApproveFR = getAdminR
-
 
 getApproveR :: Text -> Handler Html
 getApproveR title = do
