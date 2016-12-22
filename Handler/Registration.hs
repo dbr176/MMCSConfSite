@@ -24,7 +24,7 @@ data RegInform = RegInform {
 getRegistrationR :: Handler Html
 getRegistrationR = do
 	(appWidget, appEnctype) <- generateFormPost inputRegInform
-
+    
 	defaultLayout [whamlet|<div .container>
         <div class="form"><form id="contactform">
             <form method=post action=@{RegistrationR} enctype=#{appEnctype}>
@@ -50,10 +50,10 @@ postRegistrationR = do
 inputRegInform :: Form RegInform
 inputRegInform = do
     renderBootstrap3 BootstrapBasicForm $ RegInform
-                <$> areq textField "Имя" (Just "Введите имя")
-                <*> areq textField "Фамилия" (Just "Введите фамилию")
-                <*> areq textField "Отчество" (Just "Введите отчество")
-                <*> areq textField "Название доклада" (Just "Введите название доклада")
+                <$> areq textField "Имя" Nothing
+                <*> areq textField "Фамилия" Nothing
+                <*> areq textField "Отчество" Nothing
+                <*> areq textField "Название доклада" Nothing
                 <*> areq textareaField "О себе" Nothing
                 <*> areq checkBoxField "Необходимость в предоставлении жилья" Nothing
                 <*> areq fileField "Загрузить фотографию" Nothing
