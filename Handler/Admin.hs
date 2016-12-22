@@ -34,6 +34,7 @@ data ReportFileCommand =
     | ApproveRequest Text Text Text Text
     | ApproveReport Text
     | AddReport Text Text Text Text Text
+    | UpdateReport Text Text Text Text Text
     | ReportParsingError
 
 
@@ -192,8 +193,9 @@ addReportsFromFile path = do
         case rep of
             RemoveReport idnt -> (removeReport idnt) >> return ()
             AddReport title reptr time day rid -> do
-                reports <- selectList [ReportTitle ==. title] []
                 (addNewReport title "" reptr time day rid 0) >> return ()
+            UpdateReport title reptr time day rid -> do
+                (updateReport title "" reptr time day rid 0) >> return ()
             ApproveReport title -> approve title >> return ()
             ApproveRequest title time day room -> do
                 -- Найти комнату

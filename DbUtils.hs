@@ -142,6 +142,25 @@ getSponsors = do
 
 reportsByReporter rep = selectList [ReportReporter ==. rep] []
 
+updateReport  title info reporter time day room seats = do
+    rep <- selectFirst [ReportTitle ==. title] []
+    case rep of
+        Just (Entity rid _) -> do
+            rme <- selectFirst [RoomRoomident ==. room] [] 
+            case rme of
+                Just (Entity roomKey _) -> do
+                    _ <- updateWhere 
+                        [ReportTitle ==. title] 
+                        [ ReportReporter =. reporter,
+                          ReportTime     =. time,
+                          ReportDay      =. day,
+                          ReportRoom     =. roomKey,
+                          ReportSeats    =. seats]
+                    _ <- updateWhere [ReportInfoTitle ==. rid]  [ReportInfoInfo =. info]
+                    return okMsg
+                Nothing -> return roomNotExistMsg
+        Nothing -> return reportNotExist
+
 -- Добавляет полную информацию о докладе в БД
 addNewReport :: forall b (m :: * -> *).
                 (IsString b, MonadIO m) =>
