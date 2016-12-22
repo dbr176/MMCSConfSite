@@ -92,6 +92,10 @@ logm message = do
     time <- liftIO getCurrentTime
     insert $ Log message time
 
+getLog = do
+    l <- selectList [] [Desc LogMtime]
+    return l
+
 makeFullReport :: forall (m :: * -> *) a.
                    (IsString a, MonadIO m) =>
                    Text -> ReaderT SqlBackend m (Either a FullReport)

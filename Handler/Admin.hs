@@ -53,8 +53,10 @@ getAdminR = do
     rooms <- (runDB $ getRooms)
     reports <- (runDB $ getNotApprovedReports)
     requests <- (runDB $ getRequests)
+    log <- runDB getLog
     let rs = dropEntityList rooms
     let rq = dropEntityList requests
+    let lg = dropEntityList log 
     defaultLayout [whamlet|<div .container><center>
         
             <p>
@@ -106,6 +108,18 @@ getAdminR = do
                         <td>#{title}</td>
                         <td>#{reporter}</td>
                         <td><a href="/approve/#{title}">Подтвердить
+
+        <h2> Лог
+        <table border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
+            <thead>
+                <tr>
+                <th bgcolor="#FFFF00">Сообщение</th>
+                <th bgcolor="#FFFF00">Дата</th>
+            <tbody>
+                $forall (Log msg time) <- lg
+                     <tr>
+                        <td>#{msg}</td>
+                        <td>#{show time}</td>
     |]
 
 postAdminR :: Handler Html
@@ -116,10 +130,14 @@ postAdminR = do
             fl <- writeToServer $ fileInfo file
             case fl of
                 RoomsFile path ->
+                    runDB (logm "Загрузка аудиторий") >>
                     runDB (addRoomsFromFile path) >>
+                    runDB (logm "Аудитории загружены") >>
                     defaultLayout [whamlet|<p>Аудитории загружены. <a href="/admin">Вернуться|]
                 ReportsFile path ->
+                    runDB (logm "Загрузка докладов") >>
                     runDB (addReportsFromFile path) >>
+                    runDB (logm "Доклады загружены") >>
                     defaultLayout [whamlet|<p>Отчёты загружены. <a href="/admin">Вернуться |]
                 _ -> defaultLayout [whamlet|<p>Неизвестный файл. <a href="/admin">Вернуться|]
         _ -> defaultLayout
@@ -144,6 +162,7 @@ postApproveFR = do
     ((result, widget), enctype) <- runFormPost approveRequestForm
     case result of
         FormSuccess appr -> do
+            _ <- runDB $ logm "Подтверждение запросов"
             let title = arTitle appr
                 time  = arTime appr
                 day   = arDay appr
@@ -155,6 +174,7 @@ postApproveFR = do
             (Just (Entity _ (ReportRequest _ rep _))) <- runDB $ selectFirst [ReportRequestTitle ==. title] []
             runDB $ deleteWhere [ReportRequestTitle ==. title]
             runDB $ (addNewReport title ""  rep time day room 0)
+            runDB $ logm "Запросы подтверждены"
             defaultLayout [whamlet|<p>Подтверждено. <a href="/admin">Вернуться|]
         _ -> do
             defaultLayout [whamlet|<p>Не подтверждено. <a href="/admin">Вернуться|]
