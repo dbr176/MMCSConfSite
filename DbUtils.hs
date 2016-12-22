@@ -40,6 +40,8 @@ dropEntity (Entity _ x) = x
 dropEntityList :: [Entity b] -> [b]
 dropEntityList = map dropEntity
 
+requestExists = "Запрос уже существует"
+
 roomNotExistMsg :: forall a. IsString a => a
 roomNotExistMsg = "Room does not exist"
 
@@ -61,8 +63,14 @@ okMsg           = "OK"
 checkRequestCode :: forall a. (Eq a, IsString a) => a -> Bool
 checkRequestCode = (== okMsg)
 
-addReportRequest title info reporter =
-    insert $ ReportRequest title reporter info
+addReportRequest title info reporter = do
+    req <- selectFirst [ReportRequestTitle ==. title] []
+    case req of
+        Nothing -> do
+            _ <- insert $ ReportRequest title reporter info
+            return okMsg
+        _       -> 
+            do return requestExists
 
 getRequests = do
     r <- selectList [] []
