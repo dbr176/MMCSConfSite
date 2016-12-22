@@ -216,6 +216,9 @@ parseReport ["a", title, reporter, time, day, roomid] =
               (fromString time) (fromString day) (fromString roomid)
 parseReport ["p", title] = ApproveReport (fromString title)
 parseReport ["r", title] = RemoveReport (fromString title)
+parseReport ["u", title, reporter, time, day, roomid] =
+    UpdateReport (fromString title) (fromString reporter)
+              (fromString time) (fromString day) (fromString roomid)
 parseReport ["f", title, t, day, room] = ApproveRequest (fromString title) (fromString t) (fromString day) (fromString room)
 parseReport _ = ReportParsingError
 
