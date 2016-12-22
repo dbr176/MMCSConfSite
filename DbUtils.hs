@@ -85,6 +85,10 @@ getUsers = do
     usrs <- selectList [] []
     return $ (usrs :: [Entity User])
 
+getUsersInfo = do
+    usrs <- selectList [] []
+    return (usrs :: [Entity UserInfo])
+
 addUserInfo ident accom = do return $ insert $ UserInfo ident accom
 addSponsor name ref = do return $ insert $ Sponsor name ref
 
