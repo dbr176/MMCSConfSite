@@ -40,7 +40,8 @@ dropEntity (Entity _ x) = x
 dropEntityList :: [Entity b] -> [b]
 dropEntityList = map dropEntity
 
-requestExists = "Запрос уже существует"
+requestExists = "Запрос с таким именем уже существует"
+reportExists  = "Доклад с таким именем уже существует"
 
 roomNotExistMsg :: forall a. IsString a => a
 roomNotExistMsg = "Room does not exist"
@@ -153,14 +154,18 @@ addNewReport :: forall b (m :: * -> *).
                 -> Int  -- Количество свободных мест
                 -> ReaderT SqlBackend m b
 addNewReport title info reporter time day room seats = do
-    rme <- selectFirst [RoomRoomident ==. room] [] 
-    case rme of
-        Just (Entity roomKey _) -> do
-            rid <- insert $ Report title reporter time day roomKey seats
-            _ <- insert $ ReportInfo rid info
-            _ <- insert $ ReportState rid False
-            return okMsg
-        Nothing -> return roomNotExistMsg
+    rep <- selectFirst [ReportTitle ==. title] []
+    case rep of
+        Nothing -> do
+            rme <- selectFirst [RoomRoomident ==. room] [] 
+            case rme of
+                Just (Entity roomKey _) -> do
+                    rid <- insert $ Report title reporter time day roomKey seats
+                    _ <- insert $ ReportInfo rid info
+                    _ <- insert $ ReportState rid False
+                    return okMsg
+                Nothing -> return roomNotExistMsg
+        _ -> return reportExists
 
 -- Проверяет, подтверждён доклад или нет 
 isApprovedKey :: forall (m :: * -> *).
