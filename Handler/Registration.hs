@@ -50,10 +50,10 @@ postRegistrationR = do
 inputRegInform :: Form RegInform
 inputRegInform = do
     renderBootstrap3 BootstrapBasicForm $ RegInform
-                <$> areq textField "Имя" Nothing
-                <*> areq textField "Фамилия" Nothing
-                <*> areq textField "Отчество" Nothing
-                <*> areq textField "Название доклада" Nothing
+                <$> areq textField "Имя" (Just "Введите имя")
+                <*> areq textField "Фамилия" (Just "Введите фамилию")
+                <*> areq textField "Отчество" (Just "Введите отчество")
+                <*> areq textField "Название доклада" (Just "Введите название доклада")
                 <*> areq textareaField "О себе" Nothing
                 <*> areq checkBoxField "Необходимость в предоставлении жилья" Nothing
                 <*> areq fileField "Загрузить фотографию" Nothing
