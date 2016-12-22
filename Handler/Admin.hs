@@ -55,14 +55,14 @@ getAdminR = do
     let rs = dropEntityList rooms
     let rq = dropEntityList requests
     defaultLayout [whamlet|<div .container><center>
-        <div class="form"><form id="contactform">
+        
             <p>
                 Загрузка файла:
             <p> rooms.txt - файл аудиторий
             <p> reports.txt - файл докладов
             <form method=post action=@{AdminR} enctype=#{enctype}>
                 ^{widget}
-                <input class="buttom" name="submit" id="submit" tabindex="5" value="Отправить" type="submit">
+                <button>Отправить
 
         <h2> Аудитории
         <table  border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
@@ -88,12 +88,11 @@ getAdminR = do
                         <td>#{title}</td>
                         <td>#{reporter}</td>
 
-        <div class="form"><form id="contactform">
-            <form method=post action=@{ApproveFR} enctype=#{appEnctype}>
-                ^{appWidget}
-                <input class="buttom" name="submit" id="submit" tabindex="5" value="Отправить" type="submit">
+        <form method=post action=@{ApproveFR} enctype=#{appEnctype}>
+            ^{appWidget}
+            <button>Отправить
 
-        <h2> Не подтверждённые доклады
+        <h2> Неподтверждённые доклады
         <table border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
             <thead>
                 <tr>
@@ -125,10 +124,10 @@ postAdminR = do
         _ -> defaultLayout
             [whamlet|
                 <p>Ошибка, попробуйте снова.
-                <div class="form"><form id="contactform">
+                <div class="form">
                     <form method=post action=@{AdminR} enctype=#{enctype}>
                         ^{widget}
-                        <input class="buttom" name="submit" id="submit" tabindex="5" value="Отправить" type="submit">
+                        <button>Отправить
             |]
 
 appr title time day room = do
