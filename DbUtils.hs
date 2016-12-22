@@ -34,6 +34,9 @@ data FullReport = FullReport {
 -- Функции для работы с БД
 ---------------------------------------------
 
+---------------------------------------------
+-- Вспомогательные функции
+---------------------------------------------
 -- Забирает значение из Entity
 dropEntity :: Entity b -> b
 dropEntity (Entity _ x) = x
@@ -41,6 +44,27 @@ dropEntity (Entity _ x) = x
 dropEntityList :: [Entity b] -> [b]
 dropEntityList = map dropEntity
 
+logm message = do
+    time <- liftIO getCurrentTime
+    insert $ Log message time
+
+checkRequestCode :: forall a. (Eq a, IsString a) => a -> Bool
+checkRequestCode = (== okMsg)
+
+getLog = do
+    l <- selectList [] [Desc LogMtime]
+    return l
+
+maybeToEither :: forall t a b.
+                 Maybe t -> a -> (t -> Either a b) -> Either a b
+maybeToEither v msg f =
+    case v of
+        Nothing -> Left msg
+        Just x -> f x
+
+---------------------------------------------
+-- Константы
+---------------------------------------------
 requestExists = "Запрос с таким именем уже существует"
 reportExists  = "Доклад с таким именем уже существует"
 
@@ -62,8 +86,50 @@ userRegistered  = "You have already registered"
 okMsg :: forall a. IsString a => a
 okMsg           = "OK"
 
-checkRequestCode :: forall a. (Eq a, IsString a) => a -> Bool
-checkRequestCode = (== okMsg)
+
+
+---------------------------------------------
+-- Функции для работы с запросами
+---------------------------------------------
+
+
+-- Проверяет, подтверждён доклад или нет 
+isApprovedKey :: forall (m :: * -> *).
+                  MonadIO m =>
+                  -- Ключ доклада в БД
+                  Key Report -> 
+                      ReaderT SqlBackend m Bool
+isApprovedKey k = do
+    r <- selectFirst [(ReportStateTitle ==. k),(ReportStateApproved ==. True)] []
+    case r of 
+        Nothing -> return False
+        _ -> return True
+
+-- Проверяет, подтверждён доклад или нет
+isApproved :: forall (m :: * -> *).
+              MonadIO m =>
+              -- Название доклада
+              Text ->  
+                    ReaderT SqlBackend m Bool
+isApproved title = do
+    r <- reportByTitle title
+    case r of
+            Nothing -> return False
+            Just (Entity k _) -> isApprovedKey k
+
+approve :: forall (m :: * -> *).
+           MonadIO m =>
+           Text -> ReaderT SqlBackend m ()
+approve title = do
+    Just (Entity kr (Report _ _ _ _ r _)) <- reportByTitle title 
+    _ <- updateWhere [ ReportStateTitle ==. kr] [ ReportStateApproved =. True]
+    Just (Room _ s) <- get r
+    _ <- updateWhere [ ReportTitle ==. title] [ ReportSeats =. s]
+    return ()
+
+---------------------------------------------
+-- Функции для работы с отчётами
+---------------------------------------------
 
 addReportRequest title info reporter = do
     req <- selectFirst [ReportRequestTitle ==. title] []
@@ -78,27 +144,6 @@ getRequests = do
     r <- selectList [] []
     return $ (r :: [Entity ReportRequest])
 
-getUsers :: forall (m :: * -> *).
-             MonadIO m =>
-             ReaderT SqlBackend m [Entity User]
-getUsers = do
-    usrs <- selectList [] []
-    return $ (usrs :: [Entity User])
-
-getUsersInfo = do
-    usrs <- selectList [] []
-    return (usrs :: [Entity UserInfo])
-
-addUserInfo ident accom = do return $ insert $ UserInfo ident accom
-addSponsor name ref = do return $ insert $ Sponsor name ref
-
-logm message = do
-    time <- liftIO getCurrentTime
-    insert $ Log message time
-
-getLog = do
-    l <- selectList [] [Desc LogMtime]
-    return l
 
 makeFullReport :: forall (m :: * -> *) a.
                    (IsString a, MonadIO m) =>
@@ -148,14 +193,6 @@ reportByTitle :: forall (m :: * -> *).
                  Text -> ReaderT SqlBackend m (Maybe (Entity Report))
 reportByTitle title = selectFirst [ReportTitle ==. title] [] 
 
-
--- Возвращает список спонсоров
-getSponsors :: forall (m :: * -> *).
-               MonadIO m =>
-               ReaderT SqlBackend m [Entity Sponsor]
-getSponsors = do
-    l <- selectList [] []
-    return $ (l :: [Entity Sponsor])
 
 reportsByReporter rep = selectList [ReportReporter ==. rep] []
 
@@ -211,39 +248,18 @@ addNewReport title info reporter time day room seats = do
             _ <- logm (reportExists `mappend` " on insert: " `mappend` title) 
             return reportExists
 
--- Проверяет, подтверждён доклад или нет 
-isApprovedKey :: forall (m :: * -> *).
-                  MonadIO m =>
-                  -- Ключ доклада в БД
-                  Key Report -> 
-                      ReaderT SqlBackend m Bool
-isApprovedKey k = do
-    r <- selectFirst [(ReportStateTitle ==. k),(ReportStateApproved ==. True)] []
-    case r of 
-        Nothing -> return False
-        _ -> return True
+addReport :: forall b (m :: * -> *).
+             (IsString b, MonadIO m) =>
+             Text -> Text -> Text -> Text -> Text -> ReaderT SqlBackend m b
+addReport title reporter time (day :: Text) roomid = do
+    room <- selectFirst [ RoomRoomident ==. roomid ] []
 
--- Проверяет, подтверждён доклад или нет
-isApproved :: forall (m :: * -> *).
-              MonadIO m =>
-              -- Название доклада
-              Text ->  
-                    ReaderT SqlBackend m Bool
-isApproved title = do
-    r <- reportByTitle title
-    case r of
-            Nothing -> return False
-            Just (Entity k _) -> isApprovedKey k
-
-approve :: forall (m :: * -> *).
-           MonadIO m =>
-           Text -> ReaderT SqlBackend m ()
-approve title = do
-    Just (Entity kr (Report _ _ _ _ r _)) <- reportByTitle title 
-    _ <- updateWhere [ ReportStateTitle ==. kr] [ ReportStateApproved =. True]
-    Just (Room _ s) <- get r
-    _ <- updateWhere [ ReportTitle ==. title] [ ReportSeats =. s]
-    return ()
+    case room of 
+        Nothing -> return roomNotExistMsg
+        Just (Entity xid x) -> do
+            (insert 
+                  $ Report title reporter time day xid (roomMaxseats x))
+                  >> return okMsg
 
 getReports :: forall (m :: * -> *).
               MonadIO m =>
@@ -266,6 +282,38 @@ getNotApprovedReports = do
     reps <- getReports
     filterM (\(Entity key _) -> isApprovedKey key >>= (return . not)) reps
 
+---------------------------------------------
+-- Функции для работы с пользователями
+---------------------------------------------
+
+getUsers :: forall (m :: * -> *).
+             MonadIO m =>
+             ReaderT SqlBackend m [Entity User]
+getUsers = do
+    usrs <- selectList [] []
+    return $ (usrs :: [Entity User])
+
+getUsersInfo = do
+    usrs <- selectList [] []
+    return (usrs :: [Entity UserInfo])
+
+addUserInfo ident accom = do return $ insert $ UserInfo ident accom
+addSponsor name ref = do return $ insert $ Sponsor name ref
+
+-- Возвращает список спонсоров
+getSponsors :: forall (m :: * -> *).
+               MonadIO m =>
+               ReaderT SqlBackend m [Entity Sponsor]
+getSponsors = do
+    l <- selectList [] []
+    return $ (l :: [Entity Sponsor])
+
+
+
+---------------------------------------------
+-- Прочее 
+---------------------------------------------
+
 getRooms :: forall (m :: * -> *).
             MonadIO m =>
             ReaderT SqlBackend m [Entity Room]
@@ -273,31 +321,11 @@ getRooms = do
     dat <- selectList [] []
     return (dat :: [Entity Room])
 
-maybeToEither :: forall t a b.
-                 Maybe t -> a -> (t -> Either a b) -> Either a b
-maybeToEither v msg f =
-    case v of
-        Nothing -> Left msg
-        Just x -> f x
-
 -- Добавляет новую аудиторию
 addRoom :: forall (m :: * -> *).
            MonadIO m =>
            Text -> Int -> ReaderT SqlBackend m (Key Room)
 addRoom ident seats = do insert $ Room ident seats
-
-addReport :: forall b (m :: * -> *).
-             (IsString b, MonadIO m) =>
-             Text -> Text -> Text -> Text -> Text -> ReaderT SqlBackend m b
-addReport title reporter time (day :: Text) roomid = do
-    room <- selectFirst [ RoomRoomident ==. roomid ] []
-
-    case room of 
-        Nothing -> return roomNotExistMsg
-        Just (Entity xid x) -> do
-            (insert 
-                  $ Report title reporter time day xid (roomMaxseats x))
-                  >> return okMsg
 
 removeRoom ident = do
     deleteWhere [RoomRoomident ==. ident]

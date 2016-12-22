@@ -16,7 +16,7 @@ getAboutConfR = do  defaultLayout [whamlet|<div .container>
         <h2  >Время проведения:</h2>
         когда-то
         <h2>Карта проезда:</h2>
-        <iframe src="https://api-maps.yandex.ru/frame/v1/-/CZH8b6Ny" width="560" height="400" frameborder="0"></iframe>
+        <iframe src="https://api-maps.yandex.ru/frame/v1/-/CZH-I-0W" width="560" height="400" frameborder="0"></iframe>
         <h2>Фотографии:</h2>
         <ul id="nav">
             <li><a href="#slide-1">Slide 1</a>
