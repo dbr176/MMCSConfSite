@@ -1,4 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module DbUtils where
 
@@ -121,10 +122,14 @@ approveRequest title time day room = do
     rm  <- selectFirst [RoomRoomident ==. room] []
     req <- selectFirst [ReportRequestTitle ==. title] []
     case rm of 
-        Nothing -> return roomNotExistMsg
+        Nothing -> do
+            _ <- logm (roomNotExistMsg `mappend` " on insert: " `mappend` title) 
+            return roomNotExistMsg
         Just (Entity _ (Room rid seats)) ->
             case req of
-                Nothing -> return reportNotExist
+                Nothing -> do
+                    _ <- logm (reportNotExist `mappend` " on insert: " `mappend` title)
+                    return reportNotExist
                 Just (Entity _ (ReportRequest title reporter info)) -> do
                     _ <- deleteWhere [ReportRequestTitle ==. title]
                     return $ addNewReport title info reporter time day room 
@@ -162,8 +167,12 @@ updateReport  title info reporter time day room seats = do
                           ReportSeats    =. seats]
                     _ <- updateWhere [ReportInfoTitle ==. rid]  [ReportInfoInfo =. info]
                     return okMsg
-                Nothing -> return roomNotExistMsg
-        Nothing -> return reportNotExist
+                Nothing -> do
+                    _ <- logm (roomNotExistMsg `mappend` " on insert: " `mappend` title)
+                    return roomNotExistMsg
+        Nothing -> do
+            _ <- logm (reportNotExist `mappend` " on insert: " `mappend` title)
+            return reportNotExist
 
 -- Добавляет полную информацию о докладе в БД
 addNewReport :: forall b (m :: * -> *).
@@ -187,8 +196,12 @@ addNewReport title info reporter time day room seats = do
                     _ <- insert $ ReportInfo rid info
                     _ <- insert $ ReportState rid False
                     return okMsg
-                Nothing -> return roomNotExistMsg
-        _ -> return reportExists
+                Nothing -> do
+                    _ <- logm (roomNotExistMsg `mappend` " on insert: " `mappend` title)
+                    return roomNotExistMsg
+        _ -> do
+            _ <- logm (reportExists `mappend` " on insert: " `mappend` title) 
+            return reportExists
 
 -- Проверяет, подтверждён доклад или нет 
 isApprovedKey :: forall (m :: * -> *).
