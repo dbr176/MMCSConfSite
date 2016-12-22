@@ -87,6 +87,10 @@ getUsers = do
 addUserInfo ident accom = do return $ insert $ UserInfo ident accom
 addSponsor name ref = do return $ insert $ Sponsor name ref
 
+logm message = do
+    time <- liftIO getCurrentTime
+    insert $ Log message time
+
 makeFullReport :: forall (m :: * -> *) a.
                    (IsString a, MonadIO m) =>
                    Text -> ReaderT SqlBackend m (Either a FullReport)
