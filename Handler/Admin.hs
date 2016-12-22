@@ -13,6 +13,10 @@ import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Database.Persist.Sql
 import Database.Persist
 
+---------------------------------------------
+-- Типы Данных
+---------------------------------------------
+
 data LoadFileType =
       RoomsFile FilePath
     | ReportsFile FilePath
@@ -43,8 +47,16 @@ data RoomFileCommand =
     | AddRoom Text Int
     | RoomParsingError
 
+---------------------------------------------
+-- Константы
+---------------------------------------------
+
 uploadDirectory :: FilePath
 uploadDirectory = "static"
+
+---------------------------------------------
+-- Admin
+---------------------------------------------
 
 getAdminR :: Handler Html
 getAdminR = do
@@ -149,6 +161,10 @@ postAdminR = do
                         <button>Отправить
             |]
 
+---------------------------------------------
+-- Approve
+---------------------------------------------
+
 appr title time day room = do
     reports <- selectList [ReportTitle ==. title] []
     (Just (Entity _ (ReportRequest _ rep _))) <- selectFirst [ReportRequestTitle ==. title] []
@@ -178,6 +194,10 @@ postApproveFR = do
             defaultLayout [whamlet|<p>Подтверждено. <a href="/admin">Вернуться|]
         _ -> do
             defaultLayout [whamlet|<p>Не подтверждено. <a href="/admin">Вернуться|]
+
+---------------------------------------------
+-- Вспомогательные функции
+---------------------------------------------
 
 getApproveFR = getAdminR
 
@@ -256,6 +276,10 @@ writeToServer file = do
 
 filePath :: FilePath -> FilePath
 filePath f = uploadDirectory </> f
+
+---------------------------------------------
+-- Формы
+---------------------------------------------
 
 roomsForm :: Form LoadRoomsForm
 roomsForm = do
