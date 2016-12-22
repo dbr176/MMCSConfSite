@@ -101,6 +101,30 @@ okMsg           = "OK"
 -- Функции для работы с запросами
 ---------------------------------------------
 
+getSiteData = do
+    c <- selectFirst [] []
+    case c of
+        Nothing -> 
+            return $ insert $ SiteData "default" 100
+        Just (Entity _ d) 
+                -> return d
+
+getLogSize = do
+    c <- selectFirst [] []
+    case c of
+        Nothing -> 
+            return 100
+        Just (Entity _ (SiteData _ logn)) 
+            -> return $ logn
+
+setLogSize n = do
+    c <- selectFirst [SiteDataConfigName ==. "default"] []
+    case c of
+        Nothing -> 
+            insert $ SiteData "default" n
+        Just (Entity k x) -> do
+            _ <- update k [SiteDataLogn =. n]
+            return k
 
 -- Проверяет, подтверждён доклад или нет 
 isApprovedKey :: forall (m :: * -> *).

@@ -52,4 +52,8 @@ Sponsor
 Log
     message Text
     mtime UTCTime default=CURRENT_TIME
+SiteData
+    configName Text
+    logn Int
+    UniqueSiteData configName
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)

@@ -10,6 +10,8 @@
 
 /registration RegistrationR GET POST
 
+/setlogsize/#Int SetLogSizeR GET
+
 /approve/#Text ApproveR GET
 
 /appf ApproveFR GET POST

@@ -61,6 +61,12 @@ uploadDirectory = "static"
 -- Admin
 ---------------------------------------------
 
+getSetLogSizeR :: Int -> Handler Html
+getSetLogSizeR sz = do
+    runDB $ setLogSize sz
+    getAdminR
+
+
 getAdminR :: Handler Html
 getAdminR = do
     (widget, enctype) <- generateFormPost roomsForm
@@ -68,7 +74,8 @@ getAdminR = do
     rooms <- (runDB $ getRooms)
     reports <- (runDB $ getNotApprovedReports)
     requests <- (runDB $ getRequests)
-    log <- runDB getLog
+    logsz <- runDB getLogSize
+    log <- runDB $ getLogN logsz
     let rs = dropEntityList rooms
     let rq = dropEntityList requests
     let lg = dropEntityList log 
@@ -125,6 +132,9 @@ getAdminR = do
                         <td><a href="/approve/#{title}">Подтвердить
 
         <h2> Лог
+        <p> Размер лога
+        $forall i <- [1, 5, 10, 25, 50, 100, 200, 500, 1000]
+            <a href="/setlogsize/#{show i}">#{show i}
         <table border="2" bordercolor="black" width="80%" cellpadding="10" cellspacing="40" bgcolor="#0000FF">
             <thead>
                 <tr>
