@@ -12,13 +12,16 @@ getHomeR = do
 
         defaultLayout [whamlet|<div .container>
       
+       <h1> Спонсоры мероприятия </h1>
         $forall (Sponsor n (Just r)) <- dropEntityList sponsors   
             <div class="thumbs">
                <td> <a href= "#{r}" target="_blank">
-                <img src="static/sponsor/#{n}.jpg"/> </td>
+                <img src="static/sponsor/#{n}.jpg"/></a>  </td>
                 <div class="caption">
                     <span class="title">#{n}</span>   
-                    <p>            
+                    <p>   
+
+       <h1> Участники мероприятия</h1>
 
         <a class="boxed" href="mailto:email@whatever.com?subject=Partnership">Стать партнером</a>
 
