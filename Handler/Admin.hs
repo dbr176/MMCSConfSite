@@ -17,11 +17,13 @@ import Database.Persist
 -- Типы Данных
 ---------------------------------------------
 
+-- Тип загружаемого файла
 data LoadFileType =
       RoomsFile FilePath
     | ReportsFile FilePath
     | UnknownFile
 
+-- Результат формы подтверждения доклада
 data ApproveRequestFF = ApproveRequestFF {
       arTitle :: Text,
       arTime :: Text,
@@ -33,6 +35,7 @@ data LoadRoomsForm = LoadRoomsForm {
     fileInfo :: FileInfo
 }
 
+-- Команды для работы с докладами
 data ReportFileCommand =
       RemoveReport Text
     | ApproveRequest Text Text Text Text
@@ -41,7 +44,7 @@ data ReportFileCommand =
     | UpdateReport Text Text Text Text Text
     | ReportParsingError
 
-
+-- Доклады для работы с аудиторями
 data RoomFileCommand =
       RemoveRoom Text
     | AddRoom Text Int
@@ -211,6 +214,7 @@ parseRoom ["a", rid, seats] = AddRoom (fromString rid) (read seats)
 parseRoom ["r", rid, seats] = RemoveRoom (fromString rid)
 parseRoom _ = RoomParsingError
 
+-- Выполняет команды из файла с аудиториями
 addRoomsFromFile path = do
     content <- liftIO $ SIO.readFile $ filePath path
     let rooms =  map (parseRoom . (splitOn ";")) $ lines content
@@ -225,7 +229,7 @@ addRoomsFromFile path = do
             RoomParsingError -> return ()
     return ()
 
-
+-- Выполняет команды из файла с докладами
 addReportsFromFile path = do
     content <- liftIO $ SIO.readFile $ filePath path
     let reps = map (parseReport . (splitOn ";")) $ lines content

@@ -41,19 +41,28 @@ data FullReport = FullReport {
 dropEntity :: Entity b -> b
 dropEntity (Entity _ x) = x
 
+-- Забирает значение из списка Entity
 dropEntityList :: [Entity b] -> [b]
 dropEntityList = map dropEntity
 
+-- Добавляет сообщение с текущей датой в лог
 logm message = do
     time <- liftIO getCurrentTime
     insert $ Log message time
 
+-- Проверяет, что ответ не является ошибкой
 checkRequestCode :: forall a. (Eq a, IsString a) => a -> Bool
 checkRequestCode = (== okMsg)
 
+-- Возвращает лог
 getLog = do
     l <- selectList [] [Desc LogMtime]
     return l
+
+-- Возвращает последние n записей из лога
+getLogN n = do
+    l <- selectList [] [Desc LogMtime]
+    return $ take n l
 
 maybeToEither :: forall t a b.
                  Maybe t -> a -> (t -> Either a b) -> Either a b
@@ -145,6 +154,7 @@ getRequests = do
     return $ (r :: [Entity ReportRequest])
 
 
+-- Возвращает наиболее полные данные о докладе
 makeFullReport :: forall (m :: * -> *) a.
                    (IsString a, MonadIO m) =>
                    Text -> ReaderT SqlBackend m (Either a FullReport)
