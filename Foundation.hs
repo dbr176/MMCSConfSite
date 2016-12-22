@@ -96,19 +96,19 @@ instance Yesod App where
                     , menuItemRoute = HomeR
                     , menuItemAccessCallback = True
                     }
-                , NavbarLeft $ MenuItem
-                    { menuItemLabel = "Администратор"
-                    , menuItemRoute = AdminR
-                    , menuItemAccessCallback = True
-                    }
-                , NavbarLeft $ MenuItem
-                    { menuItemLabel = "Программа"
-                    , menuItemRoute = ProgramR
+                 , NavbarLeft $ MenuItem
+                    { menuItemLabel = "Регистрация"
+                    , menuItemRoute = RegistrationR
                     , menuItemAccessCallback = True
                     }
                 , NavbarLeft $ MenuItem
                     { menuItemLabel = "О конференции"
                     , menuItemRoute = AboutConfR
+                    , menuItemAccessCallback = True
+                    }    
+                , NavbarLeft $ MenuItem
+                    { menuItemLabel = "Программа"
+                    , menuItemRoute = ProgramR
                     , menuItemAccessCallback = True
                     }
                 , NavbarLeft $ MenuItem
@@ -117,22 +117,17 @@ instance Yesod App where
                     , menuItemAccessCallback = True
                     }
                 , NavbarLeft $ MenuItem
-                    { menuItemLabel = "Регистрация"
-                    , menuItemRoute = RegistrationR
-                    , menuItemAccessCallback = True
-                    }
-                , NavbarLeft $ MenuItem
-                    { menuItemLabel = "Profile"
-                    , menuItemRoute = ProfileR
+                    { menuItemLabel = "Администратор"
+                    , menuItemRoute = AdminR
                     , menuItemAccessCallback = isJust muser
-                    }
+                    }   
                 , NavbarRight $ MenuItem
                     { menuItemLabel = "Вход"
                     , menuItemRoute = AuthR LoginR
                     , menuItemAccessCallback = isNothing muser
                     }
                 , NavbarRight $ MenuItem
-                    { menuItemLabel = "Logout"
+                    { menuItemLabel = "Выход"
                     , menuItemRoute = AuthR LogoutR
                     , menuItemAccessCallback = isJust muser
                     }
@@ -256,7 +251,7 @@ isAuthenticated :: Handler AuthResult
 isAuthenticated = do
     muid <- maybeAuthId
     return $ case muid of
-        Nothing -> Unauthorized "You must login to access this page"
+        Nothing -> Unauthorized "Вы должны зарегистрироваться"
         Just _ -> Authorized
 
 instance YesodAuthPersist App
