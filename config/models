@@ -49,4 +49,7 @@ Sponsor
     name Text
     reference Text Maybe
     UniqueSponsor name
+Log
+    message Text
+    mtime UTCTime default=CURRENT_TIME
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)
