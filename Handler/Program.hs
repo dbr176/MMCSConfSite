@@ -11,7 +11,7 @@ import Database.Persist.Sql as SQL
 
 getProgramR :: Handler Html
 getProgramR = do
-    rep <- runDB $ getReports
+    rep <- runDB $ getApprovedReports
     let rs =  fmap (\(Entity _ x) -> (reportTitle x, reportReporter x, reportTime x, reportDay x, reportRoom x, reportSeats x)) rep
     rooms <- sequence $ map (\(_,_,_,_,r,_) -> runDB $ SQL.get r) rs
     let rsr = zipWith (,) rs rooms
