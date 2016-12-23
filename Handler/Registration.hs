@@ -47,6 +47,7 @@ postRegistrationR = do
             let curFile = curDir ++ "\\static\\" ++ filename
             let newFile = curDir ++ "\\static\\members\\" ++ unpack(reporter) ++ ".jpg"
             liftIO $ copyFile curFile newFile
+            liftIO $ removeFile curFile
             uid <- runDB $ insert $ (User reporter Nothing)
             runDB $ insert $ (UserInfo uid (
                 if apartment == True then
