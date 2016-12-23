@@ -27,9 +27,10 @@ getRegistrationR = do
     (appWidget, appEnctype) <- generateFormPost inputRegInform
 
     defaultLayout [whamlet|<div .container><center>
+    <div class="form"><form id="contactform"
             <form method=post action=@{RegistrationR} enctype=#{appEnctype}>
                 ^{appWidget}
-                <button>Отправить
+                <input class="buttom" name="submit" id="submit" tabindex="6" value="Зарегистрироваться" type="submit">
     |]
 
 postRegistrationR :: Handler Html
