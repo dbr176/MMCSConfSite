@@ -46,8 +46,6 @@ postRegistrationR = do
             curDir <- liftIO getCurrentDirectory
             let curFile = curDir ++ "\\static\\" ++ filename
             let newFile = curDir ++ "\\static\\members\\" ++ unpack(reporter) ++ ".jpg"
-            liftIO $ print curFile
-            liftIO $ print newFile
             liftIO $ copyFile curFile newFile
             uid <- runDB $ insert $ (User reporter Nothing)
             runDB $ insert $ (UserInfo uid (
