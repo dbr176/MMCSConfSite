@@ -43,7 +43,7 @@ getHomeR = do
                 <div class="thumbs">
                     <td><img src="static/members/#{idn}.jpg"/></td>
                         <div class="caption">
-                            <span class="title">#{replaceO $ unpack idn ++ (unpack $ fromJust $ about)}</span>   
+                            <span class="title">#{replaceO $ (unpack idn) ++ (unpack $ "\n" ++ (fromJust $ about))}</span>   
                             <p>
                             <p> 
         
