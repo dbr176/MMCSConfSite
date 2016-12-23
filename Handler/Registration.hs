@@ -24,9 +24,9 @@ data RegInform = RegInform {
 
 getRegistrationR :: Handler Html
 getRegistrationR = do
-	(appWidget, appEnctype) <- generateFormPost inputRegInform
-    
-	defaultLayout [whamlet|<div .container><center>
+    (appWidget, appEnctype) <- generateFormPost inputRegInform
+
+    defaultLayout [whamlet|<div .container><center>
             <form method=post action=@{RegistrationR} enctype=#{appEnctype}>
                 ^{appWidget}
                 <button>Отправить
@@ -34,27 +34,32 @@ getRegistrationR = do
 
 postRegistrationR :: Handler Html
 postRegistrationR = do
-	((result, widget), enctype) <- runFormPost inputRegInform
-	case result of
-		FormSuccess inf -> do
-			let reporter   = secondName inf ++ ("_"::Text) ++ firstName inf ++("_"::Text) ++ thirdName inf
-			let	title      = report inf
-			let	aboutYou   = about inf
-			let apartment  = apartments inf
-			let picture    = photo inf
-			filename <- writeToServer picture
-			return $ copyFile filename (unpack ("static/members/" ++ reporter))
-			uid <- runDB $ insert $ (User reporter Nothing)
-			runDB $ insert $ (UserInfo uid (
-				if apartment == True then 
-					Just "Необходимо жилье"
-				else
-					Nothing)
-				)
-			runDB $ insert $ (ReportRequest title reporter (unTextarea aboutYou))
-			defaultLayout [whamlet|<p>Регистрация прошла успешно. <a href="/registration">Вернуться|]
-		_ -> do
-			defaultLayout [whamlet|<p>Произошла ошибка при регистрации. <a href="/registration">Вернуться|]
+    ((result, widget), enctype) <- runFormPost inputRegInform
+    case result of
+        FormSuccess inf -> do
+            let reporter   = secondName inf ++ ("_"::Text) ++ firstName inf ++("_"::Text) ++ thirdName inf
+            let title      = report inf
+            let aboutYou   = about inf
+            let apartment  = apartments inf
+            let picture    = photo inf
+            filename <- writeToServer picture
+            curDir <- liftIO getCurrentDirectory
+            let curFile = curDir ++ "\\static\\" ++ filename
+            let newFile = curDir ++ "\\static\\members\\" ++ unpack(reporter) ++ ".jpg"
+            liftIO $ print curFile
+            liftIO $ print newFile
+            liftIO $ copyFile curFile newFile
+            uid <- runDB $ insert $ (User reporter Nothing)
+            runDB $ insert $ (UserInfo uid (
+                if apartment == True then
+                    Just "Необходимо жилье"
+                else
+                    Nothing)
+                )
+            runDB $ insert $ (ReportRequest title reporter (unTextarea aboutYou))
+            defaultLayout [whamlet|<p>Регистрация прошла успешно. <a href="/registration">Вернуться|]
+        _ -> do
+            defaultLayout [whamlet|<p>Произошла ошибка при регистрации. <a href="/registration">Вернуться|]
 
 inputRegInform :: Form RegInform
 inputRegInform = do
