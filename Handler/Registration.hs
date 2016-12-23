@@ -10,6 +10,7 @@ import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Database.Persist.Sql
 import Database.Persist
 import Text.Julius (RawJS (..))
+import System.Directory
 
 data RegInform = RegInform {
     firstName  :: Text,
@@ -36,11 +37,14 @@ postRegistrationR = do
 	((result, widget), enctype) <- runFormPost inputRegInform
 	case result of
 		FormSuccess inf -> do
-			let reporter   = secondName inf ++ ("_"::Text) ++ firstName inf ++("_"::Text) ++ thirdName inf
+			let reporter   = secondName inf ++ firstName inf ++ thirdName inf
 			let	title      = report inf
 			let	aboutYou   = about inf
 			let apartment  = apartments inf
 			let picture    = photo inf
+			let path       = unpack $ fileName picture
+			--liftIO $ print path
+			return $ copyFile path (unpack ("static/members" ++ reporter))
 			uid <- runDB $ insert $ (User reporter Nothing)
 			runDB $ insert $ (UserInfo uid (
 				if apartment == True then 
@@ -63,3 +67,9 @@ inputRegInform = do
                 <*> areq textareaField "О себе" Nothing
                 <*> areq checkBoxField "Необходимость в предоставлении жилья" Nothing
                 <*> areq fileField "Загрузить фотографию" Nothing
+
+filePath :: FilePath -> FilePath
+filePath f = uploadDirectory </> f
+
+uploadDirectory :: FilePath
+uploadDirectory = "static"
