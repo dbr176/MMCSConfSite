@@ -121,16 +121,6 @@ instance Yesod App where
                     , menuItemRoute = AdminR
                     , menuItemAccessCallback = isJust muser
                     }   
-                , NavbarRight $ MenuItem
-                    { menuItemLabel = "Вход"
-                    , menuItemRoute = AuthR LoginR
-                    , menuItemAccessCallback = isNothing muser
-                    }
-                , NavbarRight $ MenuItem
-                    { menuItemLabel = "Выход"
-                    , menuItemRoute = AuthR LogoutR
-                    , menuItemAccessCallback = isJust muser
-                    }
                 ]
 
         let navbarLeftMenuItems = [x | NavbarLeft x <- menuItems]
