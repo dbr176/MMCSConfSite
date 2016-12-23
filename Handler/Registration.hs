@@ -42,9 +42,8 @@ postRegistrationR = do
 			let	aboutYou   = about inf
 			let apartment  = apartments inf
 			let picture    = photo inf
-			let path       = unpack $ fileName picture
-			--liftIO $ print path
-			return $ copyFile path (unpack ("static/members" ++ reporter))
+			filename <- writeToServer picture
+			return $ copyFile filename (unpack ("static/members" ++ reporter))
 			uid <- runDB $ insert $ (User reporter Nothing)
 			runDB $ insert $ (UserInfo uid (
 				if apartment == True then 
@@ -68,8 +67,15 @@ inputRegInform = do
                 <*> areq checkBoxField "Необходимость в предоставлении жилья" Nothing
                 <*> areq fileField "Загрузить фотографию" Nothing
 
-filePath :: FilePath -> FilePath
-filePath f = uploadDirectory </> f
+writeToServer :: FileInfo -> Handler FilePath
+writeToServer file = do
+    let filename = unpack $ fileName file
+        path = imageFilePath filename
+    liftIO $ fileMove file path
+    return filename
 
 uploadDirectory :: FilePath
 uploadDirectory = "static"
+
+imageFilePath :: String -> FilePath
+imageFilePath f = uploadDirectory </> f
