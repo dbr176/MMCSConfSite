@@ -197,9 +197,7 @@ postApproveFR = do
                 day   = arDay appr
                 room  = arRoom appr
             --_ <- runDB $ appr title time day room
-            reports <- runDB $ selectList [ReportTitle ==. title] [] 
             reports <- runDB $ selectList [ReportTitle ==. title] []
-            runDB $ deleteWhere [ReportRequestTitle ==. title]
             (Just (Entity _ (ReportRequest _ rep _))) <- runDB $ selectFirst [ReportRequestTitle ==. title] []
             runDB $ deleteWhere [ReportRequestTitle ==. title]
             runDB $ (addNewReport title ""  rep time day room 0)
