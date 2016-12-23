@@ -48,7 +48,7 @@ postRegistrationR = do
             let newFile = curDir ++ "\\static\\members\\" ++ unpack(reporter) ++ ".jpg"
             liftIO $ copyFile curFile newFile
             liftIO $ removeFile curFile
-            uid <- runDB $ insert $ (User reporter Nothing)
+            uid <- runDB $ insert $ (User reporter (Just (unTextarea aboutYou)))
             runDB $ insert $ (UserInfo uid (
                 if apartment == True then
                     Just "Необходимо жилье"

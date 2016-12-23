@@ -5,6 +5,7 @@ import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Text.Julius (RawJS (..))
 import DbUtils
 import Database.Persist.Sql as SQL
+import Data.Maybe
 
 -- Обработчик GET запроса
 getHomeR :: Handler Html
@@ -38,11 +39,11 @@ getHomeR = do
          <a class="boxed" href="mailto:email@whatever.com?subject=Partnership">Стать партнером</a>
 
          <h1> Участники мероприятия</h1>
-            $forall ((UserInfo _ _) , Just (User idn _)) <- msr  
+            $forall ((UserInfo _ _) , Just (User idn about)) <- msr  
                 <div class="thumbs">
                     <td><img src="static/members/#{idn}.jpg"/></td>
                         <div class="caption">
-                            <span class="title">#{replaceO $ unpack idn}</span>   
+                            <span class="title">#{replaceO $ unpack idn ++ (unpack $ fromJust $ about)}</span>   
                             <p>
                             <p> 
         
