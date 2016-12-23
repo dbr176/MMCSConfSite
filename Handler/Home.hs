@@ -40,7 +40,7 @@ getHomeR = do
          <h1> Участники мероприятия</h1>
             $forall ((UserInfo _ _) , Just (User idn _)) <- msr  
                 <div class="thumbs">
-                    <td><img src="static/members/#{replaceO $ unpack idn}.jpg"/></td>
+                    <td><img src="static/members/#{idn}.jpg"/></td>
                         <div class="caption">
                             <span class="title">#{replaceO $ unpack idn}</span>   
                             <p>
