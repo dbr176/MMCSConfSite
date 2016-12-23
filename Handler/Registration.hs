@@ -37,13 +37,13 @@ postRegistrationR = do
 	((result, widget), enctype) <- runFormPost inputRegInform
 	case result of
 		FormSuccess inf -> do
-			let reporter   = secondName inf ++ firstName inf ++ thirdName inf
+			let reporter   = secondName inf ++ ("_"::Text) ++ firstName inf ++("_"::Text) ++ thirdName inf
 			let	title      = report inf
 			let	aboutYou   = about inf
 			let apartment  = apartments inf
 			let picture    = photo inf
 			filename <- writeToServer picture
-			return $ copyFile filename (unpack ("static/members" ++ reporter))
+			return $ copyFile filename (unpack ("static/members/" ++ reporter))
 			uid <- runDB $ insert $ (User reporter Nothing)
 			runDB $ insert $ (UserInfo uid (
 				if apartment == True then 
