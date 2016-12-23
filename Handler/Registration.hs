@@ -41,7 +41,12 @@ postRegistrationR = do
 			let	aboutYou   = about inf
 			let apartment  = apartments inf
 			let picture    = photo inf
-			runDB $ insert $ (User reporter) Nothing
+			runDB $ insert $ (User reporter (
+				if apartment == True then 
+					Just "Необходимо жилье"
+				else
+					Nothing)
+				)
 			runDB $ insert $ (ReportRequest title reporter (unTextarea aboutYou))
 			defaultLayout [whamlet|<p>Регистрация прошла успешно. <a href="/registration">Вернуться|]
 		_ -> do
