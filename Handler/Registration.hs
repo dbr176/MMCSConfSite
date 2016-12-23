@@ -41,7 +41,8 @@ postRegistrationR = do
 			let	aboutYou   = about inf
 			let apartment  = apartments inf
 			let picture    = photo inf
-			runDB $ insert $ (User reporter (
+			uid <- runDB $ insert $ (User reporter Nothing)
+			runDB $ insert $ (UserInfo uid (
 				if apartment == True then 
 					Just "Необходимо жилье"
 				else
